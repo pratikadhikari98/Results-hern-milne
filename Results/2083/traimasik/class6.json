@@ -1,43 +1,42 @@
 {
-  "year": "2081",
+  "year": "2083",
   "exam": "traimasik",
   "class": "class6",
-  "note": "विद्यार्थीको नाम, जन्ममिति र obtained नम्बर भर्नुहोस्",
   "students": [
     {
-      "name": "विद्यार्थीको पूरा नाम",
-      "dob": "YYYY/MM/DD (नेपाली)",
+      "name": "राम बहादुर थापा",
+      "dob": "२०७०/०३/१५",
       "subjects": [
-        {
-          "name": "नेपाली",
-          "full": 75,
-          "obtained": 0
-        },
-        {
-          "name": "अंग्रेजी",
-          "full": 75,
-          "obtained": 0
-        },
-        {
-          "name": "गणित",
-          "full": 75,
-          "obtained": 0
-        },
-        {
-          "name": "विज्ञान",
-          "full": 75,
-          "obtained": 0
-        },
-        {
-          "name": "सामाजिक अध्ययन",
-          "full": 75,
-          "obtained": 0
-        },
-        {
-          "name": "स्वास्थ्य तथा शारिरिक",
-          "full": 50,
-          "obtained": 0
-        }
+        { "name": "नेपाली",                  "full": 75, "obtained": 62 },
+        { "name": "अंग्रेजी",                "full": 75, "obtained": 55 },
+        { "name": "गणित",                    "full": 75, "obtained": 70 },
+        { "name": "विज्ञान",                 "full": 75, "obtained": 60 },
+        { "name": "सामाजिक अध्ययन",          "full": 75, "obtained": 58 },
+        { "name": "स्वास्थ्य तथा शारिरिक",   "full": 50, "obtained": 42 }
+      ]
+    },
+    {
+      "name": "सीता कुमारी श्रेष्ठ",
+      "dob": "२०७१/०५/२०",
+      "subjects": [
+        { "name": "नेपाली",                  "full": 75, "obtained": 68 },
+        { "name": "अंग्रेजी",                "full": 75, "obtained": 72 },
+        { "name": "गणित",                    "full": 75, "obtained": 65 },
+        { "name": "विज्ञान",                 "full": 75, "obtained": 70 },
+        { "name": "सामाजिक अध्ययन",          "full": 75, "obtained": 63 },
+        { "name": "स्वास्थ्य तथा शारिरिक",   "full": 50, "obtained": 45 }
+      ]
+    },
+    {
+      "name": "हरि प्रसाद पौडेल",
+      "dob": "२०७०/११/०५",
+      "subjects": [
+        { "name": "नेपाली",                  "full": 75, "obtained": 50 },
+        { "name": "अंग्रेजी",                "full": 75, "obtained": 45 },
+        { "name": "गणित",                    "full": 75, "obtained": 55 },
+        { "name": "विज्ञान",                 "full": 75, "obtained": 48 },
+        { "name": "सामाजिक अध्ययन",          "full": 75, "obtained": 52 },
+        { "name": "स्वास्थ्य तथा शारिरिक",   "full": 50, "obtained": 38 }
       ]
     }
   ]
