@@ -1,0 +1,44 @@
+{
+  "year": "2081",
+  "exam": "traimasik",
+  "class": "class10",
+  "note": "विद्यार्थीको नाम, जन्ममिति र obtained नम्बर भर्नुहोस्",
+  "students": [
+    {
+      "name": "विद्यार्थीको पूरा नाम",
+      "dob": "YYYY/MM/DD (नेपाली)",
+      "subjects": [
+        {
+          "name": "नेपाली",
+          "full": 75,
+          "obtained": 0
+        },
+        {
+          "name": "अंग्रेजी",
+          "full": 75,
+          "obtained": 0
+        },
+        {
+          "name": "गणित",
+          "full": 75,
+          "obtained": 0
+        },
+        {
+          "name": "विज्ञान",
+          "full": 75,
+          "obtained": 0
+        },
+        {
+          "name": "सामाजिक अध्ययन",
+          "full": 75,
+          "obtained": 0
+        },
+        {
+          "name": "वैकल्पिक विषय",
+          "full": 75,
+          "obtained": 0
+        }
+      ]
+    }
+  ]
+}
