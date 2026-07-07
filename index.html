@@ -125,10 +125,13 @@
   .auth-box { display: flex; align-items: center; gap: 6px; }
   .auth-btn { display: flex; align-items: center; gap: 5px; background: var(--white); border: 1.5px solid var(--blue-mid); color: var(--blue-mid); font-weight: 700; font-size: 0.68rem; padding: 5px 10px; border-radius: 7px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; }
   .auth-btn:hover { background: var(--blue-mid); color: var(--white); }
-  .auth-user { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--blue-dark); font-weight: 600; max-width: 90px; }
-  .auth-user span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .auth-user img { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--blue-mid); flex-shrink: 0; }
+  .auth-user { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--blue-dark); font-weight: 600; }
+  .auth-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--blue-mid); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; flex-shrink: 0; }
   .auth-logout { background: none; border: none; color: var(--red); font-size: 0.64rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0; white-space: nowrap; }
+  .auth-box-hero { padding: 4px 0; }
+  .auth-box-hero .auth-btn { padding: 10px 20px; font-size: 0.93rem; border-radius: 8px; }
+  .auth-box-hero .auth-avatar { width: 34px; height: 34px; font-size: 1rem; }
+  .auth-box-hero .auth-logout { font-size: 0.8rem; }
   .teacher-badge { background: var(--blue-dark); color: var(--white); font-size: 0.56rem; font-weight: 700; padding: 1px 6px; border-radius: 9px; margin-left: 2px; white-space: nowrap; }
 
   /* ══ COMMUNITY / POSTS SECTION ══ */
@@ -569,7 +572,10 @@
   }
 
   @media (max-width: 680px) {
-    nav { display: none; }
+    header { justify-content: center; }
+    .header-left { width: 100%; justify-content: space-between; }
+    nav { width: 100%; justify-content: center; gap: 2px; margin-top: 4px; }
+    nav a { font-size: 0.68rem; padding: 4px 7px; }
     .wheel-svg-wrap { width: 270px; height: 270px; }
     .stats-banner { gap: 32px; }
     .hero { padding: 40px 5%; }
@@ -607,6 +613,7 @@
     <a href="#home" class="active">गृहपृष्ठ</a>
     <a href="#why">विशेषता</a>
     <a href="#notices">सूचना</a>
+    <a href="#" onclick="document.getElementById('resultModal').style.display='flex';return false;">📋 नतिजा</a>
     <a href="#community">समुदाय</a>
     <a href="#contact">सम्पर्क</a>
     <a href="#admission" class="btn-admit">भर्ना खुला</a>
@@ -621,7 +628,9 @@
     <p>अभिभावकहरूले खोज्ने सबै कुरा हामी उपलब्ध गराउँछौँ। गुणस्तरीय शिक्षा, सुरक्षित वातावरण र बच्चाको सर्वाङ्गीण विकासका लागि हामी प्रतिबद्ध छौँ।</p>
     <div class="hero-btns">
       <a href="#admission" class="btn-primary">भर्ना फारम भर्नुहोस्</a>
-      <a href="#result" class="btn-result" onclick="document.getElementById('resultModal').style.display='flex';return false;">📋 नतिजा हेर्नुहोस्</a>
+      <div class="auth-box auth-box-hero" id="authBoxHero">
+        <button class="auth-btn" onclick="loginWithGoogle()">🔑 लगइन</button>
+      </div>
       <a href="#" onclick="openLekh();return false;" class="btn-outline">थप जान्नुहोस्</a>
     </div>
   </div>
@@ -1555,18 +1564,19 @@ function loginWithGoogle() {
 function logout() { auth.signOut(); }
 
 function renderAuthBox() {
-  const box = document.getElementById('authBox');
-  if (currentUser) {
-    box.innerHTML = `
-      <div class="auth-user">
-        ${currentUser.photoURL ? `<img src="${currentUser.photoURL}" alt="">` : ''}
-        <span>${escapeHtml(currentUser.displayName || currentUser.email)}</span>
-        ${isTeacher ? '<span class="teacher-badge">शिक्षक</span>' : ''}
-      </div>
-      <button class="auth-logout" onclick="logout()">लगआउट</button>`;
-  } else {
-    box.innerHTML = `<button class="auth-btn" id="loginBtn" onclick="loginWithGoogle()">🔑 लगइन</button>`;
-  }
+  const boxes = [document.getElementById('authBox'), document.getElementById('authBoxHero')].filter(Boolean);
+  boxes.forEach(box => {
+    if (currentUser) {
+      const initial = (currentUser.email || '?').trim().charAt(0).toUpperCase();
+      box.innerHTML = `
+        <div class="auth-user" title="${escapeHtml(currentUser.email)}">
+          <span class="auth-avatar">${initial}</span>
+        </div>
+        <button class="auth-logout" onclick="logout()">लगआउट</button>`;
+    } else {
+      box.innerHTML = `<button class="auth-btn" onclick="loginWithGoogle()">🔑 लगइन</button>`;
+    }
+  });
 }
 
 auth.onAuthStateChanged(async (user) => {
