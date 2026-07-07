@@ -119,6 +119,44 @@
   .gallery-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(30,90,168,0.18); }
   .gallery-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
   .gallery-card .g-desc { padding: 12px 14px; font-size: 0.88rem; color: var(--text); line-height: 1.5; }
+
+  /* ══ AUTH BOX (HEADER) ══ */
+  .auth-box { display: flex; align-items: center; gap: 8px; }
+  .auth-btn { display: flex; align-items: center; gap: 7px; background: var(--white); border: 2px solid var(--blue-mid); color: var(--blue-mid); font-weight: 700; font-size: 0.8rem; padding: 7px 13px; border-radius: 8px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; }
+  .auth-btn:hover { background: var(--blue-mid); color: var(--white); }
+  .auth-user { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--blue-dark); font-weight: 600; }
+  .auth-user img { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--blue-mid); flex-shrink: 0; }
+  .auth-logout { background: none; border: none; color: var(--red); font-size: 0.76rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0; }
+  .teacher-badge { background: var(--blue-dark); color: var(--white); font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 2px; white-space: nowrap; }
+
+  /* ══ COMMUNITY / POSTS SECTION ══ */
+  .community-section { background: var(--sky-pale); padding: 68px 5%; }
+  .community-inner { max-width: 720px; margin: 0 auto; }
+  .post-form { background: var(--white); border-radius: 12px; padding: 18px; margin: 26px 0; box-shadow: 0 3px 16px rgba(30,90,168,0.10); }
+  .post-form input, .post-form textarea { width: 100%; border: 1.5px solid #cfe0f0; border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 0.9rem; margin-bottom: 10px; resize: vertical; }
+  .post-form button { background: var(--blue-mid); color: var(--white); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+  .post-form button:hover { background: var(--blue-dark); }
+  .login-hint { text-align: center; color: var(--text-light); font-size: 0.86rem; padding: 18px; background: var(--white); border-radius: 12px; margin: 26px 0; }
+  .post-card { background: var(--white); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 3px 16px rgba(30,90,168,0.10); }
+  .post-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .post-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-mid); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; overflow: hidden; }
+  .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .post-author { font-weight: 700; color: var(--blue-dark); font-size: 0.9rem; }
+  .post-date { font-size: 0.72rem; color: var(--text-light); }
+  .post-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: var(--text); }
+  .post-body { font-size: 0.88rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; margin-bottom: 12px; }
+  .post-actions { display: flex; gap: 16px; border-top: 1px solid #e5eef7; padding-top: 10px; }
+  .post-action-btn { background: none; border: none; display: flex; align-items: center; gap: 6px; font-size: 0.84rem; font-weight: 600; color: var(--text-light); cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .post-action-btn:hover { background: var(--sky-pale); }
+  .post-action-btn.liked { color: var(--red); }
+  .comment-box { display: none; margin-top: 12px; border-top: 1px solid #e5eef7; padding-top: 12px; }
+  .comment-box.open { display: block; }
+  .comment-item { font-size: 0.83rem; margin-bottom: 8px; line-height: 1.5; }
+  .comment-item b { color: var(--blue-dark); }
+  .comment-input-row { display: flex; gap: 8px; margin-top: 10px; }
+  .comment-input-row input { flex: 1; border: 1.5px solid #cfe0f0; border-radius: 20px; padding: 8px 14px; font-family: inherit; font-size: 0.83rem; }
+  .comment-input-row button { background: var(--blue-mid); color: var(--white); border: none; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .posts-empty, .posts-loading { text-align: center; color: var(--text-light); font-size: 0.88rem; padding: 20px; }
   .gallery-loading { color: var(--text-light); font-size: 0.93rem; padding: 32px; }
 
   /* LIGHTBOX */
@@ -558,9 +596,13 @@
     <a href="#home" class="active">गृहपृष्ठ</a>
     <a href="#why">विशेषता</a>
     <a href="#notices">सूचना</a>
+    <a href="#community">समुदाय</a>
     <a href="#contact">सम्पर्क</a>
     <a href="#admission" class="btn-admit">भर्ना खुला</a>
   </nav>
+  <div class="auth-box" id="authBox">
+    <button class="auth-btn" id="loginBtn" onclick="loginWithGoogle()">🔑 लगइन</button>
+  </div>
 </header>
 
 <!-- HERO -->
@@ -719,6 +761,27 @@
   <p class="section-sub">हाम्रा विशेष कार्यक्रम, कक्षाकोठा र विद्यार्थीहरूका यादगार पलहरू।</p>
   <div class="gallery-grid" id="galleryGrid">
     <div class="gallery-loading">तस्बिरहरू लोड हुँदैछन्…</div>
+  </div>
+</section>
+
+<!-- COMMUNITY / POSTS SECTION -->
+<section class="community-section" id="community">
+  <div class="community-inner">
+    <div class="section-label">समुदाय</div>
+    <div class="section-title">शिक्षक-अभिभावक पोस्टहरू</div>
+    <p class="section-sub">शिक्षकहरूले पोस्ट राख्नुहुन्छ, अभिभावकहरूले लाइक, कमेन्ट र सेयर गर्न सक्नुहुन्छ।</p>
+
+    <div class="post-form" id="teacherPostForm" style="display:none;">
+      <input type="text" id="postTitleInput" placeholder="शीर्षक लेख्नुहोस्">
+      <textarea id="postBodyInput" rows="3" placeholder="के भइरहेको छ लेख्नुहोस्..."></textarea>
+      <button onclick="submitPost()">पोस्ट गर्नुहोस्</button>
+    </div>
+
+    <div class="login-hint" id="loginHint">पोस्ट हेर्न, लाइक/कमेन्ट/सेयर गर्न कृपया Google खाताले लगइन गर्नुहोस्।</div>
+
+    <div id="postsFeed">
+      <div class="posts-loading">पोस्टहरू लोड हुँदैछन्...</div>
+    </div>
   </div>
 </section>
 
@@ -1441,6 +1504,231 @@ function closeLekh() {
 }
 
 loadGallery();
+</script>
+
+<!-- FIREBASE: लगइन, शिक्षक पोस्ट, लाइक/कमेन्ट/सेयर -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBO5KZq2WLLDCX8eZoL53jxCGqgNJLG-ts",
+  authDomain: "durga-d8936.firebaseapp.com",
+  projectId: "durga-d8936",
+  storageBucket: "durga-d8936.firebasestorage.app",
+  messagingSenderId: "290047636515",
+  appId: "1:290047636515:web:8ffab23a344c2544c22d96",
+  measurementId: "G-ZK11P0FG4Z"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let isTeacher = false;
+let lastPostsSnapshot = [];
+const openComments = new Set();
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+
+function loginWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(err => {
+    alert('लगइन गर्न सकिएन: ' + err.message);
+  });
+}
+
+function logout() { auth.signOut(); }
+
+function renderAuthBox() {
+  const box = document.getElementById('authBox');
+  if (currentUser) {
+    box.innerHTML = `
+      <div class="auth-user">
+        ${currentUser.photoURL ? `<img src="${currentUser.photoURL}" alt="">` : ''}
+        <span>${escapeHtml(currentUser.displayName || currentUser.email)}</span>
+        ${isTeacher ? '<span class="teacher-badge">शिक्षक</span>' : ''}
+      </div>
+      <button class="auth-logout" onclick="logout()">लगआउट</button>`;
+  } else {
+    box.innerHTML = `<button class="auth-btn" id="loginBtn" onclick="loginWithGoogle()">🔑 लगइन</button>`;
+  }
+}
+
+auth.onAuthStateChanged(async (user) => {
+  currentUser = user;
+  isTeacher = false;
+  document.getElementById('loginHint').style.display = user ? 'none' : 'block';
+  document.getElementById('teacherPostForm').style.display = 'none';
+
+  if (user) {
+    try {
+      const teacherDoc = await db.collection('teachers').doc(user.email).get();
+      isTeacher = teacherDoc.exists;
+    } catch (e) { isTeacher = false; }
+    document.getElementById('teacherPostForm').style.display = isTeacher ? 'block' : 'none';
+  }
+  renderAuthBox();
+  renderPosts(lastPostsSnapshot);
+});
+
+async function submitPost() {
+  if (!currentUser || !isTeacher) return;
+  const titleEl = document.getElementById('postTitleInput');
+  const bodyEl = document.getElementById('postBodyInput');
+  const title = titleEl.value.trim();
+  const body = bodyEl.value.trim();
+  if (!title || !body) { alert('कृपया शीर्षक र विवरण दुवै लेख्नुहोस्।'); return; }
+  try {
+    await db.collection('posts').add({
+      title, body,
+      authorName: currentUser.displayName || currentUser.email,
+      authorEmail: currentUser.email,
+      authorPhoto: currentUser.photoURL || '',
+      likes: {},
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    titleEl.value = ''; bodyEl.value = '';
+  } catch (e) {
+    alert('पोस्ट गर्न सकिएन: ' + e.message);
+  }
+}
+
+function formatDate(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('ne-NP', { year: 'numeric', month: 'short', day: 'numeric' }) +
+    ' ' + d.toLocaleTimeString('ne-NP', { hour: '2-digit', minute: '2-digit' });
+}
+
+db.collection('posts').orderBy('createdAt', 'desc').onSnapshot((snap) => {
+  lastPostsSnapshot = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderPosts(lastPostsSnapshot);
+}, () => {
+  document.getElementById('postsFeed').innerHTML = '<div class="posts-empty">पोस्टहरू लोड हुन सकेन।</div>';
+});
+
+function renderPosts(posts) {
+  const feed = document.getElementById('postsFeed');
+  if (!posts || posts.length === 0) {
+    feed.innerHTML = '<div class="posts-empty">अहिलेसम्म कुनै पोस्ट छैन।</div>';
+    return;
+  }
+  feed.innerHTML = posts.map(p => {
+    const likes = p.likes || {};
+    const likeCount = Object.keys(likes).length;
+    const liked = currentUser && likes[currentUser.uid];
+    const commentsOpen = openComments.has(p.id);
+    const initial = (p.authorName || '?').trim().charAt(0);
+    return `
+      <div class="post-card" data-id="${p.id}">
+        <div class="post-head">
+          <div class="post-avatar">${p.authorPhoto ? `<img src="${p.authorPhoto}" alt="">` : initial}</div>
+          <div>
+            <div class="post-author">${escapeHtml(p.authorName || 'शिक्षक')}</div>
+            <div class="post-date">${formatDate(p.createdAt)}</div>
+          </div>
+        </div>
+        <div class="post-title">${escapeHtml(p.title)}</div>
+        <div class="post-body">${escapeHtml(p.body)}</div>
+        <div class="post-actions">
+          <button class="post-action-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${p.id}')">${liked ? '❤️' : '🤍'} लाइक (${likeCount})</button>
+          <button class="post-action-btn" onclick="toggleComments('${p.id}')">💬 कमेन्ट</button>
+          <button class="post-action-btn" onclick="sharePost('${p.id}')">🔗 सेयर</button>
+        </div>
+        <div class="comment-box ${commentsOpen ? 'open' : ''}" id="commentBox-${p.id}">
+          <div class="comment-list" id="commentList-${p.id}">कमेन्ट लोड हुँदैछ...</div>
+          ${currentUser ? `
+          <div class="comment-input-row">
+            <input type="text" id="commentInput-${p.id}" placeholder="कमेन्ट लेख्नुहोस्...">
+            <button onclick="submitComment('${p.id}')">पठाउनुहोस्</button>
+          </div>` : `<p style="font-size:0.8rem;color:var(--text-light);margin-top:8px;">कमेन्ट गर्न लगइन गर्नुहोस्।</p>`}
+        </div>
+      </div>`;
+  }).join('');
+
+  posts.forEach(p => { if (openComments.has(p.id)) loadComments(p.id); });
+}
+
+async function toggleLike(postId) {
+  if (!currentUser) { alert('लाइक गर्न लगइन गर्नुहोस्।'); return; }
+  const ref = db.collection('posts').doc(postId);
+  const post = lastPostsSnapshot.find(p => p.id === postId);
+  const likes = (post && post.likes) || {};
+  const already = !!likes[currentUser.uid];
+  const field = `likes.${currentUser.uid}`;
+  try {
+    await ref.update({ [field]: already ? firebase.firestore.FieldValue.delete() : true });
+  } catch (e) {
+    alert('लाइक गर्न सकिएन: ' + e.message);
+  }
+}
+
+function toggleComments(postId) {
+  const box = document.getElementById(`commentBox-${postId}`);
+  if (openComments.has(postId)) {
+    openComments.delete(postId);
+    box.classList.remove('open');
+  } else {
+    openComments.add(postId);
+    box.classList.add('open');
+    loadComments(postId);
+  }
+}
+
+function loadComments(postId) {
+  db.collection('posts').doc(postId).collection('comments')
+    .orderBy('createdAt', 'asc')
+    .onSnapshot((snap) => {
+      const list = document.getElementById(`commentList-${postId}`);
+      if (!list) return;
+      if (snap.empty) {
+        list.innerHTML = '<p style="font-size:0.8rem;color:var(--text-light);">अहिलेसम्म कुनै कमेन्ट छैन।</p>';
+        return;
+      }
+      list.innerHTML = snap.docs.map(d => {
+        const c = d.data();
+        return `<div class="comment-item"><b>${escapeHtml(c.authorName || 'प्रयोगकर्ता')}:</b> ${escapeHtml(c.text)}</div>`;
+      }).join('');
+    });
+}
+
+async function submitComment(postId) {
+  if (!currentUser) return;
+  const input = document.getElementById(`commentInput-${postId}`);
+  const text = input.value.trim();
+  if (!text) return;
+  try {
+    await db.collection('posts').doc(postId).collection('comments').add({
+      text,
+      authorName: currentUser.displayName || currentUser.email,
+      authorEmail: currentUser.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    input.value = '';
+  } catch (e) {
+    alert('कमेन्ट पठाउन सकिएन: ' + e.message);
+  }
+}
+
+function sharePost(postId) {
+  const post = lastPostsSnapshot.find(p => p.id === postId);
+  const title = post ? post.title : 'पोस्ट';
+  const url = window.location.href.split('#')[0] + '#community';
+  if (navigator.share) {
+    navigator.share({ title: title, url: url }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert('लिंक कपी भयो! अब जहाँ चाहनुहुन्छ पेस्ट गर्नुहोस्।');
+    }).catch(() => { prompt('यो लिंक कपी गर्नुहोस्:', url); });
+  } else {
+    prompt('यो लिंक कपी गर्नुहोस्:', url);
+  }
+}
 </script>
 
 <!-- PWA SERVICE WORKER -->
