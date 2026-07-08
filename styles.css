@@ -246,11 +246,12 @@
     position: relative;
   }
 
-  /* बाहिरी ब्याज ट्याग — ब्ल्याकबोर्ड भन्दा बाहिर, माथिपट्टि, बायाँतिर */
+  /* बाहिरी ब्याज ट्याग — ब्ल्याकबोर्ड भन्दा बाहिर, माथिपट्टि, बीचमा */
   .bb-badge-external {
     position: absolute;
     top: -14px;
-    left: 14px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 5;
     font-family: var(--bb-font, 'Akshar', 'Noto Sans Devanagari', sans-serif);
     font-size: clamp(0.62rem, 1.5vw, 0.92rem);
