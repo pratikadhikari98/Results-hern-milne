@@ -245,8 +245,13 @@
         यो सूचना तालिका हो? (जस्तै: परीक्षा तालिका)
       </label>
       <div id="noticeTableFields" style="display:none;">
-        <input type="text" id="noticeTableHeaders" placeholder="स्तम्भका नाम, comma ले छुट्याएर (जस्तै: मिति,क-६,क-७,क-८)">
-        <textarea id="noticeTableRows" rows="4" placeholder="हरेक लाइनमा एउटा row, cell हरू comma ले छुट्याउनुहोस्&#10;जस्तै: २०८३/०३/१५,नेपाली,गणित,विज्ञान"></textarea>
+        <div class="table-builder-label">स्तम्भ (Columns) — पहिलो सामान्यतया "मिति" राख्नुहोस्:</div>
+        <div id="tableColumnsRow" class="table-columns-row"></div>
+        <button type="button" class="table-add-btn" onclick="addTableColumn()">+ स्तम्भ थप्नुहोस्</button>
+
+        <div class="table-builder-label" style="margin-top:14px;">Row हरू (हरेक कक्षा/विषयको लागि छुट्टै box):</div>
+        <div id="tableRowsContainer" class="table-rows-container"></div>
+        <button type="button" class="table-add-btn" onclick="addTableRow()">+ Row थप्नुहोस्</button>
       </div>
 
       <div class="notice-form-actions">
@@ -1117,6 +1122,65 @@ function applyNoticeTemplate() {
 function toggleNoticeTableFields() {
   const on = document.getElementById('noticeTableToggle').checked;
   document.getElementById('noticeTableFields').style.display = on ? 'block' : 'none';
+  if (on && tableColumns.length === 0) initTableBuilderDefault();
+}
+
+// ── तालिका builder (box-based, JSON headers/rows structure अनुसार) ──
+let tableColumns = [];
+let tableRows = [];
+
+function escAttr(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function initTableBuilderDefault() {
+  tableColumns = ['मिति', 'क-६', 'क-७', 'क-८'];
+  tableRows = [ new Array(tableColumns.length).fill('') ];
+  renderTableBuilder();
+}
+
+function renderTableBuilder() {
+  const colsBox = document.getElementById('tableColumnsRow');
+  const rowsBox = document.getElementById('tableRowsContainer');
+  if (!colsBox || !rowsBox) return;
+
+  colsBox.innerHTML = tableColumns.map((c, i) => `
+    <div class="table-column-cell">
+      <input type="text" value="${escAttr(c)}" oninput="updateTableColumn(${i}, this.value)" placeholder="स्तम्भ नाम">
+      ${tableColumns.length > 1 ? `<button type="button" class="table-remove-btn" onclick="removeTableColumn(${i})">✕</button>` : ''}
+    </div>`).join('');
+
+  rowsBox.innerHTML = tableRows.map((row, r) => `
+    <div class="table-row-cells">
+      ${row.map((val, c) => `<input type="text" value="${escAttr(val)}" oninput="updateTableCell(${r},${c},this.value)" placeholder="${escAttr(tableColumns[c] || '')}">`).join('')}
+      <button type="button" class="table-remove-btn" onclick="removeTableRow(${r})">✕</button>
+    </div>`).join('');
+}
+
+function updateTableColumn(i, val) { tableColumns[i] = val; }
+function updateTableCell(r, c, val) { tableRows[r][c] = val; }
+
+function addTableColumn() {
+  tableColumns.push('');
+  tableRows.forEach(row => row.push(''));
+  renderTableBuilder();
+}
+function removeTableColumn(i) {
+  if (tableColumns.length <= 1) return;
+  tableColumns.splice(i, 1);
+  tableRows.forEach(row => row.splice(i, 1));
+  renderTableBuilder();
+}
+function addTableRow() {
+  tableRows.push(new Array(tableColumns.length).fill(''));
+  renderTableBuilder();
+}
+function removeTableRow(r) {
+  tableRows.splice(r, 1);
+  if (tableRows.length === 0) tableRows.push(new Array(tableColumns.length).fill(''));
+  renderTableBuilder();
 }
 
 async function submitNotice() {
@@ -1144,10 +1208,10 @@ async function submitNotice() {
   };
 
   if (isTable) {
-    const headers = document.getElementById('noticeTableHeaders').value.split(',').map(s => s.trim()).filter(Boolean);
-    const rows = document.getElementById('noticeTableRows').value.split('\n').map(r => r.trim()).filter(Boolean)
-      .map(r => r.split(',').map(c => c.trim()));
-    if (headers.length === 0 || rows.length === 0) { alert('कृपया तालिकाका स्तम्भ र row हरू भर्नुहोस्।'); return; }
+    const headers = tableColumns.map(h => h.trim());
+    const rows = tableRows.map(row => row.map(c => c.trim()));
+    const hasContent = rows.some(row => row.some(c => c !== ''));
+    if (headers.length === 0 || !hasContent) { alert('कृपया तालिकाका स्तम्भ र कम्तिमा एउटा row भर्नुहोस्।'); return; }
     data.headers = headers;
     data.rows = rows;
   }
@@ -1187,9 +1251,15 @@ function editNotice(id) {
 
   const isTable = n.type === 'table';
   document.getElementById('noticeTableToggle').checked = isTable;
+  if (isTable && n.headers && n.rows) {
+    tableColumns = [...n.headers];
+    tableRows = n.rows.map(r => [...r]);
+  } else {
+    tableColumns = [];
+    tableRows = [];
+  }
+  renderTableBuilder();
   toggleNoticeTableFields();
-  document.getElementById('noticeTableHeaders').value = isTable && n.headers ? n.headers.join(',') : '';
-  document.getElementById('noticeTableRows').value = isTable && n.rows ? n.rows.map(r => r.join(',')).join('\n') : '';
 
   document.getElementById('noticeSubmitBtn').textContent = 'अपडेट गर्नुहोस्';
   document.getElementById('noticeCancelBtn').style.display = 'inline-block';
@@ -1206,8 +1276,9 @@ function cancelNoticeEdit() {
   document.getElementById('noticeBodyInput').value = '';
   document.getElementById('noticeFooterInput').value = '';
   document.getElementById('noticeTableToggle').checked = false;
-  document.getElementById('noticeTableHeaders').value = '';
-  document.getElementById('noticeTableRows').value = '';
+  tableColumns = [];
+  tableRows = [];
+  renderTableBuilder();
   toggleNoticeTableFields();
   document.getElementById('noticeSubmitBtn').textContent = 'कालोपाटीमा लेख्नुहोस्';
   document.getElementById('noticeCancelBtn').style.display = 'none';
