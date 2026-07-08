@@ -272,32 +272,24 @@
   .footer-bottom { border-top: 1px solid rgba(255,255,255,.12); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 0.76rem; color: #7da4c4; }
 
   /* ══ BLACKBOARD NEWS SECTION ══ */
-  .news-section { background: var(--sky-pale); padding: 68px 5%; }
+  .news-section { background: var(--sky-pale); padding: 22px 5% 68px; }
   .news-inner   { max-width: 1100px; margin: 0 auto; }
 
-  /* सूचना-पाटी title, blackboard-माथि, कहिल्यै ननिस्कने gap सहित */
-  .notice-panel-title { text-align: center; margin-bottom: 34px; }
+  /* सूचना-पाटी title — नीलो banner भित्र, सेतो अक्षरमा, loop मा एनिमेटेड */
+  .notice-panel-title { text-align: center; margin: 0; }
   .notice-panel-title span {
     display: inline-block;
     font-family: 'Noto Serif Devanagari', serif;
     font-weight: 900;
-    font-size: 1.7rem;
+    font-size: 2rem;
     letter-spacing: 1px;
-    color: var(--blue-dark);
-    background: linear-gradient(90deg, var(--blue-dark), var(--blue-mid), var(--blue-light), var(--blue-mid), var(--blue-dark));
-    background-size: 300% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: noticeTitleShine 4s linear infinite, noticeTitlePulse 2.4s ease-in-out infinite;
-  }
-  @keyframes noticeTitleShine {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 300% 50%; }
+    color: #ffffff;
+    text-shadow: 0 2px 16px rgba(59,130,209,0.7), 0 1px 4px rgba(0,0,0,0.3);
+    animation: noticeTitlePulse 2.4s ease-in-out infinite;
   }
   @keyframes noticeTitlePulse {
-    0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.05); }
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.06); opacity: 0.85; }
   }
 
   /* 0. बाहिरी wrapper — बाहिरी ब्याज ट्यागको लागि reference बनाउन */
