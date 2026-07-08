@@ -31,14 +31,14 @@
   .topbar a { color: #cfe4ff; text-decoration: none; }
 
   /* HEADER */
-  header { background: linear-gradient(135deg, var(--sky-pale) 0%, var(--white) 60%, #ddeeff 100%); padding: 7px 5%; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 2px solid var(--blue-mid); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(30,90,168,0.10); flex-wrap: wrap; }
+  header { background: linear-gradient(135deg, var(--sky-pale) 0%, var(--white) 60%, #ddeeff 100%); padding: 11px 5%; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 2px solid var(--blue-mid); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(30,90,168,0.10); flex-wrap: wrap; }
   .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .logo-area { display: flex; align-items: center; gap: 9px; }
-  .logo-circle { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--blue-mid); background: var(--white); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
-  .school-name h1 { font-family: 'Noto Serif Devanagari', serif; font-size: 0.98rem; font-weight: 700; color: var(--blue-dark); line-height: 1.15; }
-  .school-name p { font-size: 0.56rem; color: var(--blue-mid); font-weight: 600; margin-top: 1px; }
+  .logo-circle { width: 56px; height: 56px; border-radius: 50%; border: 2.5px solid var(--blue-mid); background: var(--white); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+  .school-name h1 { font-family: 'Noto Serif Devanagari', serif; font-size: 1.28rem; font-weight: 700; color: var(--blue-dark); line-height: 1.18; }
+  .school-name p { font-size: 0.72rem; color: var(--blue-mid); font-weight: 600; margin-top: 2px; }
   nav { display: flex; gap: 2px; flex-wrap: wrap; }
-  nav a { color: var(--blue-dark); text-decoration: none; font-size: 0.76rem; font-weight: 600; padding: 5px 9px; border-radius: 6px; transition: background .2s, color .2s; }
+  nav a { color: var(--blue-dark); text-decoration: none; font-size: 0.9rem; font-weight: 600; padding: 7px 12px; border-radius: 6px; transition: background .2s, color .2s; }
   nav a:hover, nav a.active { background: var(--blue-mid); color: var(--white); }
   .btn-admit { background: var(--red); color: var(--white) !important; border-radius: 6px; font-weight: 700 !important; }
   .btn-admit:hover { background: #991b1b !important; }
@@ -123,10 +123,10 @@
 
   /* ══ AUTH BOX (HEADER) ══ */
   .auth-box { display: flex; align-items: center; gap: 6px; }
-  .auth-btn { display: flex; align-items: center; gap: 5px; background: var(--white); border: 1.5px solid var(--blue-mid); color: var(--blue-mid); font-weight: 700; font-size: 0.68rem; padding: 5px 10px; border-radius: 7px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; }
+  .auth-btn { display: flex; align-items: center; gap: 6px; background: var(--white); border: 1.5px solid var(--blue-mid); color: var(--blue-mid); font-weight: 700; font-size: 0.8rem; padding: 7px 13px; border-radius: 7px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; }
   .auth-btn:hover { background: var(--blue-mid); color: var(--white); }
   .auth-user { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--blue-dark); font-weight: 600; }
-  .auth-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--blue-mid); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; flex-shrink: 0; }
+  .auth-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue-mid); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
   .auth-logout { background: none; border: none; color: var(--red); font-size: 0.64rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0; white-space: nowrap; }
   .auth-box-hero { padding: 4px 0; }
   .auth-box-hero .auth-btn { padding: 10px 20px; font-size: 0.93rem; border-radius: 8px; }
@@ -571,42 +571,45 @@
     .hero-text { max-width: 520px; }
   }
 
-  @media (max-width: 680px) {
-    header { justify-content: center; }
-    .header-left { width: 100%; justify-content: space-between; }
-    nav { width: 100%; justify-content: center; gap: 2px; margin-top: 4px; }
-    nav a { font-size: 0.68rem; padding: 4px 7px; }
-    .wheel-svg-wrap { width: 270px; height: 270px; }
-    .stats-banner { gap: 32px; }
-    .hero { padding: 40px 5%; }
+  /* ══ माथिल्लो भाग (header+hero+stats) सधैं desktop layout मा, तल भने mobile-responsive ══ */
+  #siteHeader { width: 1080px; position: fixed; top: 0; left: 0; transform-origin: top left; }
+  #desktopTopWrap { overflow: hidden; }
+  #desktopTopInner { width: 1080px; }
+  @media (min-width: 1080px) {
+    #siteHeader { width: 100%; position: sticky; transform: none !important; }
+    #headerSpacer { height: auto !important; }
+    #desktopTopInner { width: 100%; transform: none !important; }
+    #desktopTopWrap { overflow: visible; height: auto !important; }
   }
+  /* ══ BOTTOM APP BAR (Google apps-tray style) ══ */
+  .bottom-app-bar { position: fixed; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; z-index: 200; pointer-events: none; }
+  .bottom-app-bar-inner { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.98); border-radius: 26px; padding: 8px 10px; box-shadow: 0 6px 24px rgba(20,40,80,0.22), 0 1px 3px rgba(0,0,0,0.08); pointer-events: auto; }
+  .app-icon-btn { width: 46px; height: 46px; border-radius: 12px; background: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform .15s, box-shadow .15s; flex-shrink: 0; }
+  .app-icon-btn span { font-size: 1.3rem; line-height: 1; }
+  .app-icon-btn:hover, .app-icon-btn:active { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+  body { padding-bottom: 78px; }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<header>
-  <div class="header-left">
-    <div class="auth-box" id="authBox">
-      <button class="auth-btn" id="loginBtn" onclick="loginWithGoogle()">🔑 लगइन</button>
+<header id="siteHeader">
+  <div class="logo-area">
+    <div class="logo-circle">
+      <svg viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="34" cy="34" r="32" fill="#eaf5fb" stroke="#1e5aa8" stroke-width="2"/>
+        <circle cx="34" cy="34" r="26" fill="none" stroke="#1e5aa8" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="34" y="22" text-anchor="middle" font-size="7" fill="#1a3a6b" font-family="Noto Sans Devanagari,sans-serif" font-weight="bold">कालिका</text>
+        <rect x="22" y="26" width="20" height="13" rx="2" fill="#1e5aa8"/>
+        <rect x="21" y="23" width="26" height="5" rx="1.5" fill="#3b82d1"/>
+        <line x1="34" y1="39" x2="34" y2="45" stroke="#1a3a6b" stroke-width="2"/>
+        <line x1="27" y1="45" x2="41" y2="45" stroke="#1a3a6b" stroke-width="2"/>
+        <text x="34" y="56" text-anchor="middle" font-size="5.5" fill="#1e5aa8" font-family="sans-serif">Btl-10</text>
+      </svg>
     </div>
-    <div class="logo-area">
-      <div class="logo-circle">
-        <svg viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="34" cy="34" r="32" fill="#eaf5fb" stroke="#1e5aa8" stroke-width="2"/>
-          <circle cx="34" cy="34" r="26" fill="none" stroke="#1e5aa8" stroke-width="1" stroke-dasharray="4,3"/>
-          <text x="34" y="22" text-anchor="middle" font-size="7" fill="#1a3a6b" font-family="Noto Sans Devanagari,sans-serif" font-weight="bold">कालिका</text>
-          <rect x="22" y="26" width="20" height="13" rx="2" fill="#1e5aa8"/>
-          <rect x="21" y="23" width="26" height="5" rx="1.5" fill="#3b82d1"/>
-          <line x1="34" y1="39" x2="34" y2="45" stroke="#1a3a6b" stroke-width="2"/>
-          <line x1="27" y1="45" x2="41" y2="45" stroke="#1a3a6b" stroke-width="2"/>
-          <text x="34" y="56" text-anchor="middle" font-size="5.5" fill="#1e5aa8" font-family="sans-serif">Btl-10</text>
-        </svg>
-      </div>
-      <div class="school-name">
-        <h1>कालिका मानवज्ञान<br>माध्यमिक विद्यालय</h1>
-        <p>KALIKA MANAVGYAN SECONDARY SCHOOL</p>
-      </div>
+    <div class="school-name">
+      <h1>कालिका मानवज्ञान<br>माध्यमिक विद्यालय</h1>
+      <p>KALIKA MANAVGYAN SECONDARY SCHOOL</p>
     </div>
   </div>
   <nav>
@@ -618,8 +621,14 @@
     <a href="#contact">सम्पर्क</a>
     <a href="#admission" class="btn-admit">भर्ना खुला</a>
   </nav>
+  <div class="auth-box" id="authBox">
+    <button class="auth-btn" id="loginBtn" onclick="loginWithGoogle()">🔑 लगइन</button>
+  </div>
 </header>
+<div id="headerSpacer"></div>
 
+<div id="desktopTopWrap">
+<div id="desktopTopInner">
 <!-- HERO -->
 <section class="hero" id="home">
   <div class="hero-text">
@@ -733,6 +742,8 @@
   <div class="stat"><span class="stat-num">१२००+</span><div class="stat-label">विद्यार्थी</div></div>
   <div class="stat"><span class="stat-num">५०+</span><div class="stat-label">अनुभवी शिक्षक</div></div>
   <div class="stat"><span class="stat-num">९८%</span><div class="stat-label">उत्तीर्ण दर</div></div>
+</div>
+</div>
 </div>
 
 <!-- WHY -->
@@ -849,6 +860,17 @@
     <span>Butwal-10, Kalikanagar</span>
   </div>
 </footer>
+
+<!-- BOTTOM APP BAR -->
+<div class="bottom-app-bar">
+  <div class="bottom-app-bar-inner">
+    <a href="#home" class="app-icon-btn" title="गृहपृष्ठ"><span>🏠</span></a>
+    <a href="#notices" class="app-icon-btn" title="सूचना"><span>📢</span></a>
+    <a href="#community" class="app-icon-btn" title="समुदाय"><span>👥</span></a>
+    <a href="#gallery" class="app-icon-btn" title="ग्यालरी"><span>🖼️</span></a>
+    <a href="#contact" class="app-icon-btn" title="सम्पर्क"><span>☎️</span></a>
+  </div>
+</div>
 
 <script>
 // ══ BLACKBOARD — एकतर्फी अनन्त loop, auto-slide, swipe support ══
@@ -1766,6 +1788,34 @@ function sharePost(postId) {
     prompt('यो लिंक कपी गर्नुहोस्:', url);
   }
 }
+</script>
+
+<!-- माथिल्लो भाग (header+hero+stats) लाई मोबाइलमा पनि desktop layout जस्तै देखाउने स्केलिङ -->
+<script>
+function scaleDesktopTop() {
+  const header = document.getElementById('siteHeader');
+  const spacer = document.getElementById('headerSpacer');
+  const wrap = document.getElementById('desktopTopWrap');
+  const inner = document.getElementById('desktopTopInner');
+  if (!header || !wrap || !inner) return;
+  if (window.innerWidth < 1080) {
+    const scale = window.innerWidth / 1080;
+    header.style.transform = 'scale(' + scale + ')';
+    if (spacer) spacer.style.height = (header.offsetHeight * scale) + 'px';
+    inner.style.transform = 'scale(' + scale + ')';
+    inner.style.transformOrigin = 'top left';
+    wrap.style.height = (inner.offsetHeight * scale) + 'px';
+  } else {
+    header.style.transform = '';
+    if (spacer) spacer.style.height = '';
+    inner.style.transform = '';
+    wrap.style.height = '';
+  }
+}
+window.addEventListener('load', scaleDesktopTop);
+window.addEventListener('resize', scaleDesktopTop);
+window.addEventListener('orientationchange', scaleDesktopTop);
+scaleDesktopTop();
 </script>
 
 <!-- PWA SERVICE WORKER -->
