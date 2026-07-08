@@ -1315,14 +1315,16 @@ function renderNoticeManageList() {
     </div>`).join('');
 }
 
-// ══ कालोपाटी slideshow — एकतर्फी अनन्त loop, auto-slide, swipe support ══
+// ══ कालोपाटी slideshow — seamless (दुवैतिर) अनन्त loop, auto-slide + manual swipe ══
 (function () {
   const track   = document.getElementById('bbTrack');
   const dotsBox = document.getElementById('bbDots');
   const wrap    = document.getElementById('bbWrap');
 
-  let current = 0;
-  let timer = null;
+  let realCount = 0;   // कति वटा साँच्चिकै सूचना छन्
+  let pos       = 0;   // track मा हालको position (clone सहित index)
+  let timer     = null;
+  let looping   = false; // >1 सूचना भएमा मात्र clone-loop चालू हुन्छ
 
   function buildTable(n) {
     if (n.type !== 'table' || !n.headers || !n.rows) return '';
@@ -1331,65 +1333,101 @@ function renderNoticeManageList() {
     return `<div class="bb-table-wrap"><table class="bb-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
   }
 
+  function buildSlideEl(s) {
+    const el = document.createElement('div');
+    el.className = 'bb-slide';
+    const topRow = (s.badge || s.date) ? `<div class="bb-top-row">
+          ${s.badge ? `<span class="bb-badge" style="background:${s.badgeColor || '#dbeafe'};color:${s.badgeText || '#1e3a5f'}">${escapeHtml(s.badge)}</span>` : '<span></span>'}
+          ${s.date ? `<span class="bb-date">${escapeHtml(s.date)}</span>` : ''}
+        </div>` : '';
+    const bodyLines = (s.body || '').split('\n').filter(Boolean)
+      .map(line => `<div class="bb-line">${escapeHtml(line)}</div>`).join('');
+    el.innerHTML = `${topRow}<div class="bb-heading">${escapeHtml(s.title || '')}</div>` +
+      (bodyLines ? `<div class="bb-lines">${bodyLines}</div>` : '') +
+      buildTable(s) +
+      (s.footer ? `<div class="bb-footer">— ${escapeHtml(s.footer)}</div>` : '');
+    return el;
+  }
+
+  // track मा हालको position अनुसार translateX राख्ने (animate=false भए बिना transition तुरुन्त)
+  function setTrackPos(p, animate) {
+    track.style.transition = animate ? '' : 'none';
+    track.style.transform = `translateX(-${p * 100}%)`;
+    if (!animate) track.offsetHeight; // reflow force गरेर transition:none तुरुन्तै लागू गर्ने
+  }
+
+  function updateDots(realIndex) {
+    const dotEls = dotsBox.querySelectorAll('.bb-dot');
+    dotEls.forEach((d, i) => d.classList.toggle('active', i === realIndex));
+  }
+
   function render() {
     const slides = lastNoticesSnapshot;
     track.innerHTML = '';
     dotsBox.innerHTML = '';
-    if (slides.length === 0) {
+    realCount = slides.length;
+    if (realCount === 0) {
       track.innerHTML = '<div class="bb-loading-msg">हाल कुनै सूचना छैन।</div>';
       return;
     }
-    if (current >= slides.length) current = 0;
-    slides.forEach((s, i) => {
-      const el = document.createElement('div');
-      el.className = 'bb-slide' + (i === 0 ? ' active' : '');
-      const topRow = (s.badge || s.date) ? `<div class="bb-top-row">
-          ${s.badge ? `<span class="bb-badge" style="background:${s.badgeColor || '#dbeafe'};color:${s.badgeText || '#1e3a5f'}">${escapeHtml(s.badge)}</span>` : '<span></span>'}
-          ${s.date ? `<span class="bb-date">${escapeHtml(s.date)}</span>` : ''}
-        </div>` : '';
-      const bodyLines = (s.body || '').split('\n').filter(Boolean)
-        .map(line => `<div class="bb-line">${escapeHtml(line)}</div>`).join('');
-      el.innerHTML = `${topRow}<div class="bb-heading">${escapeHtml(s.title || '')}</div>` +
-        (bodyLines ? `<div class="bb-lines">${bodyLines}</div>` : '') +
-        buildTable(s) +
-        (s.footer ? `<div class="bb-footer">— ${escapeHtml(s.footer)}</div>` : '');
-      track.appendChild(el);
+    looping = realCount > 1;
 
+    // वास्तविक सूचनाहरू + दुवैतिर seamless loop का लागि clone
+    if (looping) track.appendChild(buildSlideEl(slides[realCount - 1])); // अन्तिमको clone सुरुमा
+    slides.forEach(s => track.appendChild(buildSlideEl(s)));
+    if (looping) track.appendChild(buildSlideEl(slides[0]));             // पहिलोको clone अन्त्यमा
+
+    slides.forEach((s, i) => {
       const dot = document.createElement('span');
       dot.className = 'bb-dot' + (i === 0 ? ' active' : '');
-      dot.onclick = () => goTo(i);
+      dot.onclick = () => goToReal(i);
       dotsBox.appendChild(dot);
     });
-    goTo(current, true);
+
+    pos = looping ? 1 : 0; // looping भए clone को कारणले वास्तविक पहिलो सूचना index 1 मा हुन्छ
+    setTrackPos(pos, false);
     startAuto();
   }
 
-  function goTo(i, silent) {
-    const slideEls = track.querySelectorAll('.bb-slide');
-    const dotEls = dotsBox.querySelectorAll('.bb-dot');
-    if (!slideEls.length) return;
-    if (!silent) {
-      slideEls[current] && slideEls[current].classList.remove('active');
-      dotEls[current] && dotEls[current].classList.remove('active');
-    }
-    current = (i + slideEls.length) % slideEls.length;
-    slideEls[current].classList.add('active');
-    dotEls[current].classList.add('active');
-    // ← यहाँ नै track लाई साँच्चिकै सार्ने काम हुन्छ, अघि यो लाइन नै हराएको थियो
-    track.style.transform = `translateX(-${current * 100}%)`;
+  // dir: +1 (अर्को) वा -1 (अघिल्लो)
+  function step(dir) {
+    if (!realCount || !looping) return; // एउटै सूचना भए loop आवश्यक छैन
+    pos += dir;
+    setTrackPos(pos, true);
   }
+
+  function goToReal(i) {
+    if (!realCount) return;
+    pos = looping ? (i + 1) : 0;
+    setTrackPos(pos, true);
+    updateDots(i);
+  }
+
+  // clone मा पुगेपछि छेउमै (बिना animation) साँच्चिकै स्लाइडमा snap back गर्ने → अनन्त feel
+  track.addEventListener('transitionend', () => {
+    if (!looping) return;
+    if (pos >= realCount + 1) {          // अन्तिम clone (पहिलोको नक्कल) मा पुग्यो
+      pos = 1;
+      setTrackPos(pos, false);
+    } else if (pos <= 0) {               // सुरुको clone (अन्तिमको नक्कल) मा पुग्यो
+      pos = realCount;
+      setTrackPos(pos, false);
+    }
+    updateDots(((pos - 1) + realCount) % realCount);
+  });
 
   function startAuto() {
     if (timer) clearInterval(timer);
-    if (lastNoticesSnapshot.length > 1) timer = setInterval(() => goTo(current + 1), 5000);
+    if (realCount > 1) timer = setInterval(() => step(1), 5000);
   }
 
-  // ══ Swipe support (touch + mouse drag दुवैको लागि) ══
+  // ══ Swipe support (touch + mouse drag दुवैको लागि, दुवैतिर seamless loop) ══
   let dragStartX = 0;
   let dragging = false;
   let dragMoved = 0;
 
   function dragStart(x) {
+    if (!realCount) return;
     dragStartX = x;
     dragMoved = 0;
     dragging = true;
@@ -1400,16 +1438,15 @@ function renderNoticeManageList() {
     if (!dragging) return;
     dragMoved = x - dragStartX;
     const pct = (dragMoved / wrap.clientWidth) * 100;
-    track.style.transform = `translateX(calc(-${current * 100}% + ${pct}%))`;
+    track.style.transform = `translateX(calc(-${pos * 100}% + ${pct}%))`;
   }
   function dragEnd() {
     if (!dragging) return;
     dragging = false;
-    track.style.transition = ''; // CSS को transform 0.45s फेरि लागू हुने
     if (Math.abs(dragMoved) > 40) {
-      goTo(current + (dragMoved < 0 ? 1 : -1));
+      step(dragMoved < 0 ? 1 : -1);
     } else {
-      goTo(current, true); // सानो movement भए आफ्नै स्लाइडमा फर्किने
+      setTrackPos(pos, true); // सानो movement भए आफ्नै स्लाइडमा फर्किने
     }
     startAuto();
   }
@@ -1428,7 +1465,6 @@ function renderNoticeManageList() {
 
   db.collection('notices').orderBy('createdAt', 'asc').onSnapshot((snap) => {
     lastNoticesSnapshot = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    current = 0;
     render();
     renderNoticeManageList();
   }, () => {

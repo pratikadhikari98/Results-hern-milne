@@ -294,10 +294,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;  /* शीर्षक जहिले पनि माथि नै, टेक्स्टको लम्बाइले तल-माथि नहोस् */
     text-align: center;
     box-sizing: border-box;
-    padding: 2% 4%;
+    padding: 3% 4% 2%;
     overflow: hidden;          /* extra safety per slide */
   }
 
