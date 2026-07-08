@@ -211,6 +211,27 @@
       <div class="bb-dots" id="bbDots"></div>
     </div>
 
+    <!-- शिक्षकका लागि मात्र: कालोपाटीमा सूचना लेख्ने फारम -->
+    <div class="post-form" id="noticeForm" style="display:none;">
+      <select id="noticeTemplateSelect" onchange="applyNoticeTemplate()">
+        <option value="">— टेम्प्लेट छान्नुहोस् (वैकल्पिक) —</option>
+        <option value="notice">सामान्य सूचना</option>
+        <option value="holiday">बिदाको सूचना</option>
+        <option value="exam">परीक्षा तालिका सूचना</option>
+        <option value="event">कार्यक्रम/समारोह सूचना</option>
+        <option value="meeting">अभिभावक भेला सूचना</option>
+      </select>
+      <input type="text" id="noticeTitleInput" placeholder="शीर्षक लेख्नुहोस्">
+      <textarea id="noticeBodyInput" rows="3" placeholder="सूचनाको विवरण लेख्नुहोस्..."></textarea>
+      <div class="notice-form-actions">
+        <button id="noticeSubmitBtn" onclick="submitNotice()">कालोपाटीमा लेख्नुहोस्</button>
+        <button id="noticeCancelBtn" onclick="cancelNoticeEdit()" style="display:none;">रद्द गर्नुहोस्</button>
+      </div>
+    </div>
+
+    <!-- शिक्षकका लागि मात्र: पहिले लेखिएका सूचनाहरूको सूची (edit/delete) -->
+    <div class="notice-manage-list" id="noticeManageList"></div>
+
   </div>
 </section>
 
@@ -810,6 +831,7 @@ auth.onAuthStateChanged(async (user) => {
   isTeacher = false;
   document.getElementById('loginHint').style.display = user ? 'none' : 'block';
   document.getElementById('teacherPostForm').style.display = 'none';
+  document.getElementById('noticeForm').style.display = 'none';
 
   if (user) {
     try {
@@ -817,9 +839,11 @@ auth.onAuthStateChanged(async (user) => {
       isTeacher = teacherDoc.exists;
     } catch (e) { isTeacher = false; }
     document.getElementById('teacherPostForm').style.display = isTeacher ? 'block' : 'none';
+    document.getElementById('noticeForm').style.display = isTeacher ? 'block' : 'none';
   }
   renderAuthBox();
   renderPosts(lastPostsSnapshot);
+  if (typeof renderNoticeManageList === 'function') renderNoticeManageList();
 });
 
 async function submitPost() {
@@ -995,45 +1019,139 @@ function sharePost(postId) {
 </script>
 
 <script>
-// ══ BLACKBOARD — एकतर्फी अनन्त loop, auto-slide, swipe support ══
-(async function () {
-  const FILES = [
-    'news/news10.json',
-    'news/news1.json',
-    'news/news2.json',
-    'news/news3.json',
-    'news/news4.json',
-    'news/news5.json',
-    'news/news6.json',
-    'news/news7.json',
-    'news/news8.json',
-    'news/news9.json'
-  ];
+// ══ ब्ल्याकबोर्ड (सूचना) — Firestore बाट, शिक्षकले लेख्न/edit/delete गर्न मिल्ने ══
+let lastNoticesSnapshot = [];
+let editingNoticeId = null;
+
+const NOTICE_TEMPLATES = {
+  notice: {
+    title: 'जरुरी सूचना',
+    body: 'सम्पूर्ण विद्यार्थी तथा अभिभावकहरूलाई जानकारी गराइन्छ कि...'
+  },
+  holiday: {
+    title: 'बिदाको सूचना',
+    body: 'मिति ..... देखि ..... सम्म विद्यालय बिदा रहने भएकोले सबैलाई जानकारी गराइन्छ।'
+  },
+  exam: {
+    title: 'परीक्षा तालिका सूचना',
+    body: 'त्रैमासिक/वार्षिक परीक्षा मिति ..... बाट सुरु हुने भएकोले विद्यार्थीहरूलाई तयारी गर्न अनुरोध छ।'
+  },
+  event: {
+    title: 'कार्यक्रम/समारोहको सूचना',
+    body: 'मिति ..... मा विद्यालयमा ..... कार्यक्रम आयोजना हुने भएकोले सबैलाई उपस्थित हुन अनुरोध छ।'
+  },
+  meeting: {
+    title: 'अभिभावक भेलाको सूचना',
+    body: 'मिति ..... मा समय ..... बजे अभिभावक भेला हुने भएकोले सम्बन्धित सबैलाई अनिवार्य उपस्थित हुन अनुरोध गरिन्छ।'
+  }
+};
+
+function applyNoticeTemplate() {
+  const key = document.getElementById('noticeTemplateSelect').value;
+  if (!key || !NOTICE_TEMPLATES[key]) return;
+  document.getElementById('noticeTitleInput').value = NOTICE_TEMPLATES[key].title;
+  document.getElementById('noticeBodyInput').value = NOTICE_TEMPLATES[key].body;
+}
+
+async function submitNotice() {
+  if (!currentUser || !isTeacher) return;
+  const titleEl = document.getElementById('noticeTitleInput');
+  const bodyEl = document.getElementById('noticeBodyInput');
+  const title = titleEl.value.trim();
+  const body = bodyEl.value.trim();
+  if (!title || !body) { alert('कृपया शीर्षक र विवरण दुवै लेख्नुहोस्।'); return; }
+  try {
+    if (editingNoticeId) {
+      await db.collection('notices').doc(editingNoticeId).update({ title, body });
+    } else {
+      await db.collection('notices').add({
+        title, body,
+        authorName: currentUser.displayName || currentUser.email,
+        authorEmail: currentUser.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    cancelNoticeEdit();
+  } catch (e) {
+    alert('सूचना लेख्न सकिएन: ' + e.message);
+  }
+}
+
+function editNotice(id) {
+  const n = lastNoticesSnapshot.find(x => x.id === id);
+  if (!n) return;
+  editingNoticeId = id;
+  document.getElementById('noticeTitleInput').value = n.title || '';
+  document.getElementById('noticeBodyInput').value = n.body || '';
+  document.getElementById('noticeSubmitBtn').textContent = 'अपडेट गर्नुहोस्';
+  document.getElementById('noticeCancelBtn').style.display = 'inline-block';
+  document.getElementById('noticeForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelNoticeEdit() {
+  editingNoticeId = null;
+  document.getElementById('noticeTemplateSelect').value = '';
+  document.getElementById('noticeTitleInput').value = '';
+  document.getElementById('noticeBodyInput').value = '';
+  document.getElementById('noticeSubmitBtn').textContent = 'कालोपाटीमा लेख्नुहोस्';
+  document.getElementById('noticeCancelBtn').style.display = 'none';
+}
+
+async function deleteNotice(id) {
+  if (!confirm('यो सूचना कालोपाटीबाट मेटाउने पक्का हो?')) return;
+  try {
+    await db.collection('notices').doc(id).delete();
+    if (editingNoticeId === id) cancelNoticeEdit();
+  } catch (e) {
+    alert('मेटाउन सकिएन: ' + e.message);
+  }
+}
+
+function renderNoticeManageList() {
+  const box = document.getElementById('noticeManageList');
+  if (!box) return;
+  if (!isTeacher) { box.innerHTML = ''; return; }
+  if (lastNoticesSnapshot.length === 0) {
+    box.innerHTML = '<div class="notice-manage-empty">अहिलेसम्म कुनै सूचना लेखिएको छैन।</div>';
+    return;
+  }
+  box.innerHTML = lastNoticesSnapshot.map(n => `
+    <div class="notice-manage-item">
+      <div class="notice-manage-text">
+        <b>${escapeHtml(n.title || '')}</b>
+        <span>${escapeHtml(n.body || '')}</span>
+      </div>
+      <div class="notice-manage-actions">
+        <button onclick="editNotice('${n.id}')">✏️ Edit</button>
+        <button onclick="deleteNotice('${n.id}')" class="notice-delete-btn">🗑️ Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+// ══ कालोपाटी slideshow — एकतर्फी अनन्त loop, auto-slide, swipe support ══
+(function () {
   const track   = document.getElementById('bbTrack');
   const dotsBox = document.getElementById('bbDots');
   const wrap    = document.getElementById('bbWrap');
-  let slides = [];
-
-  async function loadSlides() {
-    const results = await Promise.all(FILES.map(f => fetch(f).then(r => r.ok ? r.json() : null).catch(() => null)));
-    slides = results.filter(Boolean);
-    if (slides.length === 0) {
-      track.innerHTML = '<div class="bb-loading-msg">हाल कुनै सूचना छैन।</div>';
-      return;
-    }
-    render();
-  }
 
   let current = 0;
   let timer = null;
 
   function render() {
+    const slides = lastNoticesSnapshot;
     track.innerHTML = '';
     dotsBox.innerHTML = '';
+    if (slides.length === 0) {
+      track.innerHTML = '<div class="bb-loading-msg">हाल कुनै सूचना छैन।</div>';
+      return;
+    }
+    if (current >= slides.length) current = 0;
     slides.forEach((s, i) => {
       const el = document.createElement('div');
       el.className = 'bb-slide' + (i === 0 ? ' active' : '');
-      el.innerHTML = `<h3>${s.title || ''}</h3><p>${s.body || ''}</p>`;
+      const bodyLines = (s.body || '').split('\n').filter(Boolean)
+        .map(line => `<div class="bb-line">${escapeHtml(line)}</div>`).join('');
+      el.innerHTML = `<div class="bb-heading">${escapeHtml(s.title || '')}</div><div class="bb-lines">${bodyLines}</div>`;
       track.appendChild(el);
 
       const dot = document.createElement('span');
@@ -1041,23 +1159,26 @@ function sharePost(postId) {
       dot.onclick = () => goTo(i);
       dotsBox.appendChild(dot);
     });
+    goTo(current, true);
     startAuto();
   }
 
-  function goTo(i) {
+  function goTo(i, silent) {
     const slideEls = track.querySelectorAll('.bb-slide');
     const dotEls = dotsBox.querySelectorAll('.bb-dot');
     if (!slideEls.length) return;
-    slideEls[current].classList.remove('active');
-    dotEls[current].classList.remove('active');
-    current = (i + slides.length) % slides.length;
+    if (!silent) {
+      slideEls[current] && slideEls[current].classList.remove('active');
+      dotEls[current] && dotEls[current].classList.remove('active');
+    }
+    current = (i + slideEls.length) % slideEls.length;
     slideEls[current].classList.add('active');
     dotEls[current].classList.add('active');
   }
 
   function startAuto() {
     if (timer) clearInterval(timer);
-    timer = setInterval(() => goTo(current + 1), 5000);
+    if (lastNoticesSnapshot.length > 1) timer = setInterval(() => goTo(current + 1), 5000);
   }
 
   // Swipe support
@@ -1070,7 +1191,14 @@ function sharePost(postId) {
     }, { passive: true });
   }
 
-  loadSlides();
+  db.collection('notices').orderBy('createdAt', 'asc').onSnapshot((snap) => {
+    lastNoticesSnapshot = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    current = 0;
+    render();
+    renderNoticeManageList();
+  }, () => {
+    track.innerHTML = '<div class="bb-loading-msg">सूचना लोड हुन सकेन।</div>';
+  });
 })();
 </script>
 
