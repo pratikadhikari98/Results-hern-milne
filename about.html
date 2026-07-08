@@ -70,26 +70,6 @@
     </div>
   </section>
 
-  <!-- NEWS / BLACKBOARD SECTION -->
-  <section class="news-section" id="notices">
-    <div class="news-inner">
-
-      <!-- Blackboard with slides inside -->
-      <div class="bb-wrap" id="bbWrap">
-        <img src="photos/blackboard.png" alt="कालोपाटी" class="bb-bg">
-        <!-- text viewport = chalk-writing area only -->
-        <div class="bb-viewport">
-          <div class="bb-track" id="bbTrack">
-            <div class="bb-loading-msg" id="bbLoading">सूचना लोड हुँदैछ...</div>
-          </div>
-        </div>
-        <!-- chalk dots inside the board (below writing area) -->
-        <div class="bb-dots" id="bbDots"></div>
-      </div>
-
-    </div>
-  </section>
-
   <!-- PHOTO GALLERY SECTION -->
   <section class="gallery-section" id="gallery">
     <div class="section-label">तस्बिरहरू</div>
@@ -120,7 +100,7 @@
       <h4>द्रुत लिङ्कहरू</h4>
       <a href="index.html#home">गृहपृष्ठ</a>
       <a href="about.html#why">विशेषताहरू</a>
-      <a href="about.html#notices">सूचना पाटी</a>
+      <a href="index.html#notices">सूचना पाटी</a>
       <a href="index.html#admission">भर्ना</a>
     </div>
     <div class="footer-col">
@@ -146,86 +126,6 @@
     <a href="#contact" class="app-icon-btn" title="सम्पर्क"><span>☎️</span></a>
   </div>
 </div>
-
-<script>
-// ══ BLACKBOARD — एकतर्फी अनन्त loop, auto-slide, swipe support ══
-(async function () {
-  const FILES = [
-    'news/news10.json',
-    'news/news1.json',
-    'news/news2.json',
-    'news/news3.json',
-    'news/news4.json',
-    'news/news5.json',
-    'news/news6.json',
-    'news/news7.json',
-    'news/news8.json',
-    'news/news9.json'
-  ];
-  const track   = document.getElementById('bbTrack');
-  const dotsBox = document.getElementById('bbDots');
-  const wrap    = document.getElementById('bbWrap');
-  let slides = [];
-
-  async function loadSlides() {
-    const results = await Promise.all(FILES.map(f => fetch(f).then(r => r.ok ? r.json() : null).catch(() => null)));
-    slides = results.filter(Boolean);
-    if (slides.length === 0) {
-      track.innerHTML = '<div class="bb-loading-msg">हाल कुनै सूचना छैन।</div>';
-      return;
-    }
-    render();
-  }
-
-  let current = 0;
-  let timer = null;
-
-  function render() {
-    track.innerHTML = '';
-    dotsBox.innerHTML = '';
-    slides.forEach((s, i) => {
-      const el = document.createElement('div');
-      el.className = 'bb-slide' + (i === 0 ? ' active' : '');
-      el.innerHTML = `<h3>${s.title || ''}</h3><p>${s.body || ''}</p>`;
-      track.appendChild(el);
-
-      const dot = document.createElement('span');
-      dot.className = 'bb-dot' + (i === 0 ? ' active' : '');
-      dot.onclick = () => goTo(i);
-      dotsBox.appendChild(dot);
-    });
-    startAuto();
-  }
-
-  function goTo(i) {
-    const slideEls = track.querySelectorAll('.bb-slide');
-    const dotEls = dotsBox.querySelectorAll('.bb-dot');
-    if (!slideEls.length) return;
-    slideEls[current].classList.remove('active');
-    dotEls[current].classList.remove('active');
-    current = (i + slides.length) % slides.length;
-    slideEls[current].classList.add('active');
-    dotEls[current].classList.add('active');
-  }
-
-  function startAuto() {
-    if (timer) clearInterval(timer);
-    timer = setInterval(() => goTo(current + 1), 5000);
-  }
-
-  // Swipe support
-  let touchStartX = 0;
-  if (wrap) {
-    wrap.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    wrap.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
-    }, { passive: true });
-  }
-
-  loadSlides();
-})();
-</script>
 
 <script>
 // ══ PHOTO GALLERY ══
