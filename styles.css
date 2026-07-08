@@ -76,7 +76,7 @@
     background: linear-gradient(135deg, #1a3a6b, #1e5aa8, #3b82d1, #1e5aa8, #1a3a6b);
     background-size: 300% 300%;
     animation: gradientShift 8s ease infinite;
-    padding: 46px 5%;
+    padding: 34px 5%;
     display: flex;
     justify-content: center;
     gap: 56px;
@@ -272,7 +272,7 @@
   .footer-bottom { border-top: 1px solid rgba(255,255,255,.12); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 0.76rem; color: #7da4c4; }
 
   /* ══ BLACKBOARD NEWS SECTION ══ */
-  .news-section { background: var(--sky-pale); padding: 22px 5% 68px; }
+  .news-section { background: var(--sky-pale); padding: 6px 5% 68px; }
   .news-inner   { max-width: 1100px; margin: 0 auto; }
 
   /* सूचना-पाटी title — नीलो banner भित्र, सेतो अक्षरमा, loop मा एनिमेटेड */
@@ -281,7 +281,7 @@
     display: inline-block;
     font-family: 'Noto Serif Devanagari', serif;
     font-weight: 900;
-    font-size: 2rem;
+    font-size: 2.7rem;
     letter-spacing: 1px;
     color: #ffffff;
     text-shadow: 0 2px 16px rgba(59,130,209,0.7), 0 1px 4px rgba(0,0,0,0.3);
