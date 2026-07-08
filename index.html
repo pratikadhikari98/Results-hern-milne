@@ -167,33 +167,6 @@
 </div>
 </div>
 
-<!-- COMMUNITY / POSTS SECTION -->
-<section class="community-section" id="community">
-  <div class="community-inner">
-    <div class="community-head">
-      <div>
-        <div class="section-label">समुदाय</div>
-        <div class="section-title">शिक्षक-अभिभावक पोस्टहरू</div>
-        <p class="section-sub">शिक्षकहरूले पोस्ट राख्नुहुन्छ, अभिभावकहरूले लाइक, कमेन्ट र सेयर गर्न सक्नुहुन्छ।</p>
-      </div>
-    </div>
-
-    <div class="post-form" id="teacherPostForm" style="display:none;">
-      <input type="text" id="postTitleInput" placeholder="शीर्षक लेख्नुहोस्">
-      <textarea id="postBodyInput" rows="3" placeholder="के भइरहेको छ लेख्नुहोस्..."></textarea>
-      <input type="text" id="postMediaUrlInput" placeholder="फोटो/भिडियोको link (वैकल्पिक) - जस्तै Google Photos, YouTube link">
-      <p class="media-hint">फोटो वा भिडियो थप्न चाहनुभयो भने त्यसको link यहाँ पेस्ट गर्नुहोस्। link नभए यो खाली छोड्नुहोस्।</p>
-      <button id="submitPostBtn" onclick="submitPost()">पोस्ट गर्नुहोस्</button>
-    </div>
-
-    <div class="login-hint" id="loginHint">पोस्ट हेर्न, लाइक/कमेन्ट/सेयर गर्न कृपया Google खाताले लगइन गर्नुहोस्।</div>
-
-    <div id="postsFeed">
-      <div class="posts-loading">पोस्टहरू लोड हुँदैछन्...</div>
-    </div>
-  </div>
-</section>
-
 <!-- NEWS / BLACKBOARD SECTION -->
 <section class="news-section" id="notices">
   <div class="news-inner">
@@ -307,6 +280,33 @@
     <!-- शिक्षकका लागि मात्र: पहिले लेखिएका सूचनाहरूको सूची (edit/delete) -->
     <div class="notice-manage-list" id="noticeManageList"></div>
 
+  </div>
+</section>
+
+<!-- COMMUNITY / POSTS SECTION -->
+<section class="community-section" id="community">
+  <div class="community-inner">
+    <div class="community-head">
+      <div>
+        <div class="section-label">समुदाय</div>
+        <div class="section-title">शिक्षक-अभिभावक पोस्टहरू</div>
+        <p class="section-sub">शिक्षकहरूले पोस्ट राख्नुहुन्छ, अभिभावकहरूले लाइक, कमेन्ट र सेयर गर्न सक्नुहुन्छ।</p>
+      </div>
+    </div>
+
+    <div class="post-form" id="teacherPostForm" style="display:none;">
+      <input type="text" id="postTitleInput" placeholder="शीर्षक लेख्नुहोस्">
+      <textarea id="postBodyInput" rows="3" placeholder="के भइरहेको छ लेख्नुहोस्..."></textarea>
+      <input type="text" id="postMediaUrlInput" placeholder="फोटो/भिडियोको link (वैकल्पिक) - जस्तै Google Photos, YouTube link">
+      <p class="media-hint">फोटो वा भिडियो थप्न चाहनुभयो भने त्यसको link यहाँ पेस्ट गर्नुहोस्। link नभए यो खाली छोड्नुहोस्।</p>
+      <button id="submitPostBtn" onclick="submitPost()">पोस्ट गर्नुहोस्</button>
+    </div>
+
+    <div class="login-hint" id="loginHint">पोस्ट हेर्न, लाइक/कमेन्ट/सेयर गर्न कृपया Google खाताले लगइन गर्नुहोस्।</div>
+
+    <div id="postsFeed">
+      <div class="posts-loading">पोस्टहरू लोड हुँदैछन्...</div>
+    </div>
   </div>
 </section>
 
