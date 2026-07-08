@@ -140,6 +140,10 @@
   .teacher-badge { background: var(--blue-dark); color: var(--white); font-size: 0.56rem; font-weight: 700; padding: 1px 6px; border-radius: 9px; margin-left: 2px; white-space: nowrap; }
 
   /* ══ COMMUNITY / POSTS SECTION ══ */
+  /* सूचना (कालोपाटी) को लाइक/कमेन्ट/सेयर */
+  .notice-social { max-width: 640px; margin: 22px auto 0; background: var(--white); border-radius: 14px; padding: 10px 14px 14px; box-shadow: 0 3px 14px rgba(30,90,168,0.09); border: 1px solid #eef3f9; }
+  .notice-social .post-actions { display: flex; }
+
   .community-section { background: linear-gradient(180deg, #eaf3fc 0%, var(--sky-pale) 100%); padding: 44px 5% 60px; }
   .community-inner { max-width: 720px; margin: 0 auto; }
   .community-head { text-align: center; margin-bottom: 8px; }

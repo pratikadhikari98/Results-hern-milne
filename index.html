@@ -175,6 +175,23 @@
       </div>
     </div>
 
+    <!-- कालोपाटीमा हाल देखिरहेको सूचनाको लाइक/कमेन्ट/सेयर -->
+    <div class="notice-social" id="noticeSocial">
+      <div class="post-actions">
+        <button class="post-action-btn like-btn" id="noticeLikeBtn" onclick="toggleNoticeLike(this)"><span class="like-icon">🤍</span> लाइक <span class="like-count">(0)</span></button>
+        <button class="post-action-btn" id="noticeCommentBtn" onclick="toggleNoticeComments(this)"><span class="comment-icon">💬</span> कमेन्ट</button>
+        <button class="post-action-btn" onclick="shareNotice(this)"><span class="share-icon">🔗</span> सेयर</button>
+      </div>
+      <div class="comment-box" id="noticeCommentBox">
+        <div class="comment-list" id="noticeCommentList"></div>
+        <div class="comment-input-row" id="noticeCommentInputRow" style="display:none;">
+          <input type="text" id="noticeCommentInput" placeholder="कमेन्ट लेख्नुहोस्...">
+          <button onclick="submitNoticeComment()">पठाउनुहोस्</button>
+        </div>
+        <p id="noticeLoginHint" style="display:none;font-size:0.8rem;color:var(--text-light);margin-top:8px;">कमेन्ट गर्न लगइन गर्नुहोस्।</p>
+      </div>
+    </div>
+
     <!-- शिक्षकका लागि मात्र: कालोपाटीमा सूचना लेख्ने फारम -->
     <div class="post-form" id="noticeForm" style="display:none;">
       <div class="post-form-head" id="noticeFormHead" onclick="toggleNoticeFormBody()">
@@ -925,6 +942,7 @@ auth.onAuthStateChanged(async (user) => {
   renderAuthBox();
   renderPosts(lastPostsSnapshot);
   if (typeof renderNoticeManageList === 'function') renderNoticeManageList();
+  if (typeof renderNoticeSocial === 'function') renderNoticeSocial();
 });
 
 async function submitPost() {
@@ -1524,6 +1542,7 @@ function renderNoticeManageList() {
   function updateDots(realIndex) {
     const dotEls = dotsBox.querySelectorAll('.bb-dot');
     dotEls.forEach((d, i) => d.classList.toggle('active', i === realIndex));
+    if (typeof onNoticeSlideChange === 'function') onNoticeSlideChange(realIndex);
   }
 
   function render() {
@@ -1533,6 +1552,7 @@ function renderNoticeManageList() {
     realCount = slides.length;
     if (realCount === 0) {
       track.innerHTML = '<div class="bb-loading-msg">हाल कुनै सूचना छैन।</div>';
+      if (typeof onNoticeSlideChange === 'function') onNoticeSlideChange(-1);
       return;
     }
     looping = realCount > 1;
@@ -1552,6 +1572,7 @@ function renderNoticeManageList() {
     pos = looping ? 1 : 0; // looping भए clone को कारणले वास्तविक पहिलो सूचना index 1 मा हुन्छ
     setTrackPos(pos, false);
     startAuto();
+    if (typeof onNoticeSlideChange === 'function') onNoticeSlideChange(0);
   }
 
   // dir: +1 (अर्को) वा -1 (अघिल्लो)
@@ -1633,10 +1654,233 @@ function renderNoticeManageList() {
     lastNoticesSnapshot = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     render();
     renderNoticeManageList();
+    if (typeof onNoticesDataChange === 'function') onNoticesDataChange();
   }, () => {
     track.innerHTML = '<div class="bb-loading-msg">सूचना लोड हुन सकेन।</div>';
   });
 })();
+</script>
+
+<!-- कालोपाटीमा हाल देखिरहेको सूचनाको लाइक/कमेन्ट/सेयर लजिक -->
+<script>
+let activeNoticeId = null;
+let noticeCommentsOpen = false;
+let noticeCommentsUnsub = null;
+let lastNoticeCommentsSnapshot = [];
+const editingNoticeComments = new Set();
+
+// स्वाइप/स्लाइड-चेन्ज हुँदा bbTrack IIFE ले यो कल गर्छ
+function onNoticeSlideChange(realIndex) {
+  const slides = (typeof lastNoticesSnapshot !== 'undefined') ? lastNoticesSnapshot : [];
+  const n = realIndex >= 0 ? slides[realIndex] : null;
+  const newId = n ? n.id : null;
+  if (newId === activeNoticeId) { renderNoticeSocial(); return; }
+  activeNoticeId = newId;
+  noticeCommentsOpen = false;
+  editingNoticeComments.clear();
+  if (noticeCommentsUnsub) { noticeCommentsUnsub(); noticeCommentsUnsub = null; }
+  lastNoticeCommentsSnapshot = [];
+  renderNoticeSocial();
+}
+
+// सूचनाहरूको डाटा (जस्तै लाइक गणना) परिवर्तन हुँदा bbTrack IIFE ले यो कल गर्छ
+function onNoticesDataChange() {
+  renderNoticeSocial();
+}
+
+function renderNoticeSocial() {
+  const bar = document.getElementById('noticeSocial');
+  if (!bar) return;
+  const slides = (typeof lastNoticesSnapshot !== 'undefined') ? lastNoticesSnapshot : [];
+  const n = slides.find(x => x.id === activeNoticeId);
+  if (!n) { bar.style.display = 'none'; return; }
+  bar.style.display = '';
+
+  const likeBtn = document.getElementById('noticeLikeBtn');
+  const commentBtn = document.getElementById('noticeCommentBtn');
+  const box = document.getElementById('noticeCommentBox');
+  const inputRow = document.getElementById('noticeCommentInputRow');
+  const loginHint = document.getElementById('noticeLoginHint');
+
+  const likes = n.likes || {};
+  const likeCount = Object.keys(likes).length;
+  const liked = !!(currentUser && likes[currentUser.uid]);
+  likeBtn.classList.toggle('liked', liked);
+  likeBtn.querySelector('.like-icon').textContent = liked ? '❤️' : '🤍';
+  likeBtn.querySelector('.like-count').textContent = `(${likeCount})`;
+
+  commentBtn.classList.toggle('comments-active', noticeCommentsOpen);
+  box.classList.toggle('open', noticeCommentsOpen);
+  inputRow.style.display = currentUser ? 'flex' : 'none';
+  loginHint.style.display = currentUser ? 'none' : 'block';
+
+  if (noticeCommentsOpen) renderNoticeComments();
+}
+
+async function toggleNoticeLike(btn) {
+  if (!currentUser) { alert('लाइक गर्न लगइन गर्नुहोस्।'); return; }
+  if (!activeNoticeId) return;
+  const n = lastNoticesSnapshot.find(x => x.id === activeNoticeId);
+  const likes = (n && n.likes) || {};
+  const already = !!likes[currentUser.uid];
+  if (!already) {
+    btn.classList.add('like-burst');
+    if (typeof spawnLikeParticles === 'function') spawnLikeParticles(btn);
+    setTimeout(() => btn.classList.remove('like-burst'), 450);
+  }
+  try {
+    await db.collection('notices').doc(activeNoticeId).update({
+      [`likes.${currentUser.uid}`]: already ? firebase.firestore.FieldValue.delete() : true
+    });
+  } catch (e) {
+    alert('लाइक गर्न सकिएन: ' + e.message);
+  }
+}
+
+function toggleNoticeComments(btn) {
+  if (!activeNoticeId) return;
+  noticeCommentsOpen = !noticeCommentsOpen;
+  if (noticeCommentsOpen) {
+    loadNoticeComments(activeNoticeId);
+    setTimeout(() => {
+      const input = document.getElementById('noticeCommentInput');
+      if (input) input.focus();
+    }, 200);
+  } else if (noticeCommentsUnsub) {
+    noticeCommentsUnsub(); noticeCommentsUnsub = null;
+  }
+  renderNoticeSocial();
+}
+
+function loadNoticeComments(noticeId) {
+  if (noticeCommentsUnsub) { noticeCommentsUnsub(); noticeCommentsUnsub = null; }
+  noticeCommentsUnsub = db.collection('notices').doc(noticeId).collection('comments')
+    .orderBy('createdAt', 'asc')
+    .onSnapshot((snap) => {
+      if (noticeId !== activeNoticeId) return;
+      lastNoticeCommentsSnapshot = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderNoticeComments();
+    });
+}
+
+function renderNoticeComments() {
+  const list = document.getElementById('noticeCommentList');
+  if (!list) return;
+  const comments = lastNoticeCommentsSnapshot;
+  if (!comments.length) {
+    list.innerHTML = '<p style="font-size:0.8rem;color:var(--text-light);">अहिलेसम्म कुनै कमेन्ट छैन।</p>';
+    return;
+  }
+  list.innerHTML = comments.map(c => {
+    const canModify = !!currentUser && (isTeacher || c.authorUid === currentUser.uid || (c.authorEmail && c.authorEmail === currentUser.email));
+    const isEditing = editingNoticeComments.has(c.id);
+    if (isEditing) {
+      return `
+        <div class="comment-item comment-item-editing" data-id="${c.id}">
+          <textarea class="comment-edit-input" id="noticeEditInput-${c.id}" rows="2">${escapeHtml(c.text)}</textarea>
+          <div class="comment-item-actions">
+            <button class="comment-mini-btn comment-mini-save" onclick="saveEditNoticeComment('${c.id}')" title="सेभ गर्नुहोस्">✔️</button>
+            <button class="comment-mini-btn" onclick="cancelEditNoticeComment('${c.id}')" title="रद्द गर्नुहोस्">✕</button>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="comment-item" data-id="${c.id}">
+        <div class="comment-item-main"><b>${escapeHtml(c.authorName || 'प्रयोगकर्ता')}:</b> <span class="comment-text">${escapeHtml(c.text)}</span>${c.edited ? '<span class="comment-edited-tag">(सम्पादित)</span>' : ''}</div>
+        ${canModify ? `
+        <div class="comment-item-actions">
+          <button class="comment-mini-btn" onclick="startEditNoticeComment('${c.id}')" title="सम्पादन गर्नुहोस्">✏️</button>
+          <button class="comment-mini-btn comment-mini-delete" onclick="deleteNoticeComment('${c.id}')" title="मेटाउनुहोस्">🗑️</button>
+        </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function startEditNoticeComment(id) {
+  editingNoticeComments.add(id);
+  renderNoticeComments();
+  const input = document.getElementById(`noticeEditInput-${id}`);
+  if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+}
+
+function cancelEditNoticeComment(id) {
+  editingNoticeComments.delete(id);
+  renderNoticeComments();
+}
+
+async function saveEditNoticeComment(id) {
+  const input = document.getElementById(`noticeEditInput-${id}`);
+  if (!input || !activeNoticeId) return;
+  const text = input.value.trim();
+  if (!text) { alert('कमेन्ट खाली हुन सक्दैन।'); return; }
+  try {
+    await db.collection('notices').doc(activeNoticeId).collection('comments').doc(id).update({
+      text,
+      edited: true,
+      editedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    editingNoticeComments.delete(id);
+  } catch (e) {
+    alert('कमेन्ट सम्पादन गर्न सकिएन: ' + e.message);
+  }
+}
+
+async function deleteNoticeComment(id) {
+  if (!confirm('यो कमेन्ट मेटाउने पक्का हो?')) return;
+  const noticeId = activeNoticeId;
+  if (!noticeId) return;
+  const item = document.querySelector(`#noticeCommentList .comment-item[data-id="${id}"]`);
+  if (item) item.classList.add('comment-item-removing');
+  setTimeout(async () => {
+    try {
+      await db.collection('notices').doc(noticeId).collection('comments').doc(id).delete();
+    } catch (e) {
+      alert('कमेन्ट मेटाउन सकिएन: ' + e.message);
+    }
+  }, 160);
+}
+
+async function submitNoticeComment() {
+  if (!currentUser || !activeNoticeId) return;
+  const input = document.getElementById('noticeCommentInput');
+  const text = input.value.trim();
+  if (!text) return;
+  try {
+    await db.collection('notices').doc(activeNoticeId).collection('comments').add({
+      text,
+      authorName: currentUser.displayName || currentUser.email,
+      authorEmail: currentUser.email,
+      authorUid: currentUser.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    input.value = '';
+  } catch (e) {
+    alert('कमेन्ट पठाउन सकिएन: ' + e.message);
+  }
+}
+
+function shareNotice(btn) {
+  const n = (lastNoticesSnapshot || []).find(x => x.id === activeNoticeId);
+  const title = n ? n.title : 'सूचना';
+  const url = window.location.href.split('#')[0] + '#notices';
+  const flashShared = () => {
+    if (!btn) return;
+    const original = btn.innerHTML;
+    btn.classList.add('share-pulse');
+    btn.innerHTML = '<span class="share-icon">✅</span> सेयर भयो';
+    setTimeout(() => {
+      btn.classList.remove('share-pulse');
+      btn.innerHTML = original;
+    }, 1400);
+  };
+  if (navigator.share) {
+    navigator.share({ title: title, url: url }).then(flashShared).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(flashShared).catch(() => { prompt('यो लिंक कपी गर्नुहोस्:', url); });
+  } else {
+    prompt('यो लिंक कपी गर्नुहोस्:', url);
+  }
+}
 </script>
 
 <!-- माथिल्लो भाग (header+hero+stats) लाई मोबाइलमा पनि desktop layout जस्तै देखाउने स्केलिङ -->
