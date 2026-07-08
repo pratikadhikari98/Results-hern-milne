@@ -178,9 +178,9 @@
     <!-- कालोपाटीमा हाल देखिरहेको सूचनाको लाइक/कमेन्ट/सेयर -->
     <div class="notice-social" id="noticeSocial">
       <div class="post-actions">
-        <button class="post-action-btn like-btn" id="noticeLikeBtn" onclick="toggleNoticeLike(this)"><span class="like-icon">🤍</span> लाइक <span class="like-count">(0)</span></button>
-        <button class="post-action-btn" id="noticeCommentBtn" onclick="toggleNoticeComments(this)"><span class="comment-icon">💬</span> कमेन्ट</button>
-        <button class="post-action-btn" onclick="shareNotice(this)"><span class="share-icon">🔗</span> सेयर</button>
+        <button class="post-action-btn like-btn" id="noticeLikeBtn" onclick="toggleNoticeLike(this)" aria-label="लाइक"><span class="like-icon"><svg viewBox="0 0 24 24" width="21" height="21"><path d="M12 20.7s-7.1-4.55-9.85-8.66C.5 9.62.98 6.1 3.6 4.28c2.2-1.53 5.05-1.13 6.8.96l1.6 1.9 1.6-1.9c1.75-2.09 4.6-2.49 6.8-.96 2.62 1.82 3.1 5.34 1.45 7.76C19.1 16.15 12 20.7 12 20.7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></span><span class="like-count">0</span></button>
+        <button class="post-action-btn" id="noticeCommentBtn" onclick="toggleNoticeComments(this)" aria-label="कमेन्ट"><span class="comment-icon"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4.4 3.3A.6.6 0 0 1 3.6 20V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></span></button>
+        <button class="post-action-btn" onclick="shareNotice(this)" aria-label="सेयर"><span class="share-icon"><svg viewBox="0 0 24 24" width="20" height="20"><circle cx="6" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="8.2" y1="10.8" x2="15.8" y2="7.2" stroke="currentColor" stroke-width="1.7"/><line x1="8.2" y1="13.2" x2="15.8" y2="16.8" stroke="currentColor" stroke-width="1.7"/></svg></span></button>
       </div>
       <div class="comment-box" id="noticeCommentBox">
         <div class="comment-list" id="noticeCommentList"></div>
@@ -1022,9 +1022,9 @@ function renderPosts(posts) {
         <div class="post-body">${escapeHtml(p.body)}</div>
         ${renderMediaEmbed(p.mediaUrl)}
         <div class="post-actions">
-          <button class="post-action-btn like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${p.id}', this)"><span class="like-icon">${liked ? '❤️' : '🤍'}</span> लाइक <span class="like-count">(${likeCount})</span></button>
-          <button class="post-action-btn ${commentsOpen ? 'comments-active' : ''}" onclick="toggleComments('${p.id}', this)"><span class="comment-icon">💬</span> कमेन्ट</button>
-          <button class="post-action-btn" onclick="sharePost('${p.id}', this)"><span class="share-icon">🔗</span> सेयर</button>
+          <button class="post-action-btn like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${p.id}', this)" aria-label="लाइक"><span class="like-icon"><svg viewBox="0 0 24 24" width="21" height="21"><path d="M12 20.7s-7.1-4.55-9.85-8.66C.5 9.62.98 6.1 3.6 4.28c2.2-1.53 5.05-1.13 6.8.96l1.6 1.9 1.6-1.9c1.75-2.09 4.6-2.49 6.8-.96 2.62 1.82 3.1 5.34 1.45 7.76C19.1 16.15 12 20.7 12 20.7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></span><span class="like-count">${likeCount}</span></button>
+          <button class="post-action-btn ${commentsOpen ? 'comments-active' : ''}" onclick="toggleComments('${p.id}', this)" aria-label="कमेन्ट"><span class="comment-icon"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4.4 3.3A.6.6 0 0 1 3.6 20V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></span></button>
+          <button class="post-action-btn" onclick="sharePost('${p.id}', this)" aria-label="सेयर"><span class="share-icon"><svg viewBox="0 0 24 24" width="20" height="20"><circle cx="6" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="8.2" y1="10.8" x2="15.8" y2="7.2" stroke="currentColor" stroke-width="1.7"/><line x1="8.2" y1="13.2" x2="15.8" y2="16.8" stroke="currentColor" stroke-width="1.7"/></svg></span></button>
         </div>
         <div class="comment-box ${commentsOpen ? 'open' : ''}" id="commentBox-${p.id}">
           <div class="comment-list" id="commentList-${p.id}">कमेन्ट लोड हुँदैछ...</div>
@@ -1213,7 +1213,7 @@ function sharePost(postId, btn) {
     if (!btn) return;
     const original = btn.innerHTML;
     btn.classList.add('share-pulse');
-    btn.innerHTML = '<span class="share-icon">✅</span> सेयर भयो';
+    btn.innerHTML = '<span class="share-icon"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
     setTimeout(() => {
       btn.classList.remove('share-pulse');
       btn.innerHTML = original;
@@ -1706,8 +1706,7 @@ function renderNoticeSocial() {
   const likeCount = Object.keys(likes).length;
   const liked = !!(currentUser && likes[currentUser.uid]);
   likeBtn.classList.toggle('liked', liked);
-  likeBtn.querySelector('.like-icon').textContent = liked ? '❤️' : '🤍';
-  likeBtn.querySelector('.like-count').textContent = `(${likeCount})`;
+  likeBtn.querySelector('.like-count').textContent = likeCount;
 
   commentBtn.classList.toggle('comments-active', noticeCommentsOpen);
   box.classList.toggle('open', noticeCommentsOpen);
@@ -1867,7 +1866,7 @@ function shareNotice(btn) {
     if (!btn) return;
     const original = btn.innerHTML;
     btn.classList.add('share-pulse');
-    btn.innerHTML = '<span class="share-icon">✅</span> सेयर भयो';
+    btn.innerHTML = '<span class="share-icon"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
     setTimeout(() => {
       btn.classList.remove('share-pulse');
       btn.innerHTML = original;

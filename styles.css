@@ -230,15 +230,19 @@
   .post-title { font-weight: 700; font-size: 1.02rem; margin-bottom: 6px; color: var(--text); }
   .post-body { font-size: 0.89rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; margin-bottom: 12px; }
   .post-actions { display: flex; gap: 8px; border-top: 1px solid #eef3f9; padding-top: 10px; }
-  .post-action-btn { background: none; border: none; display: flex; align-items: center; gap: 6px; font-size: 0.83rem; font-weight: 600; color: var(--text-light); cursor: pointer; padding: 6px 12px; border-radius: 20px; transition: background .18s, color .18s, transform .12s; flex: 1; justify-content: center; }
+  .post-action-btn { background: none; border: none; display: flex; align-items: center; gap: 6px; font-size: 0.83rem; font-weight: 600; color: var(--text-light); cursor: pointer; padding: 8px 12px; border-radius: 20px; transition: background .18s, color .18s, transform .12s; flex: 1; justify-content: center; }
   .post-action-btn:hover { background: var(--sky-pale); color: var(--blue-mid); transform: translateY(-1px); }
   .post-action-btn:active { transform: scale(0.94); }
   .post-action-btn.liked { color: var(--red); }
-  .post-action-btn .like-icon, .post-action-btn .comment-icon, .post-action-btn .share-icon { display: inline-block; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+  .post-action-btn .like-icon, .post-action-btn .comment-icon, .post-action-btn .share-icon { display: flex; align-items: center; justify-content: center; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+  .post-action-btn .like-icon svg, .post-action-btn .comment-icon svg, .post-action-btn .share-icon svg { display: block; }
+  .post-action-btn .like-icon svg path { transition: fill .18s ease; }
+  .post-action-btn.liked .like-icon svg path { fill: currentColor; }
+  .like-count { font-size: 0.8rem; font-weight: 700; min-width: 10px; text-align: left; }
   .post-action-btn.liked .like-icon { animation: likeBounce .38s cubic-bezier(.34,1.56,.64,1); }
   .post-action-btn.like-burst .like-icon { transform: scale(1.35); }
   .post-action-btn.comments-active { background: var(--sky-pale); color: var(--blue-mid); }
-  .post-action-btn.comments-active .comment-icon { transform: rotate(-12deg) scale(1.1); }
+  .post-action-btn.comments-active .comment-icon { transform: rotate(-8deg) scale(1.1); }
   .post-action-btn:hover .share-icon { transform: rotate(-18deg) scale(1.1); }
   .post-action-btn.share-pulse { background: #e6f7ec; color: #1f8a4c; animation: sharePulse .5s ease; }
   @keyframes likeBounce { 0% { transform: scale(1); } 35% { transform: scale(1.5); } 60% { transform: scale(0.85); } 100% { transform: scale(1); } }
