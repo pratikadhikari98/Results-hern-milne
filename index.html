@@ -1375,6 +1375,8 @@ function renderNoticeManageList() {
     current = (i + slideEls.length) % slideEls.length;
     slideEls[current].classList.add('active');
     dotEls[current].classList.add('active');
+    // ← यहाँ नै track लाई साँच्चिकै सार्ने काम हुन्छ, अघि यो लाइन नै हराएको थियो
+    track.style.transform = `translateX(-${current * 100}%)`;
   }
 
   function startAuto() {
@@ -1382,14 +1384,46 @@ function renderNoticeManageList() {
     if (lastNoticesSnapshot.length > 1) timer = setInterval(() => goTo(current + 1), 5000);
   }
 
-  // Swipe support
-  let touchStartX = 0;
+  // ══ Swipe support (touch + mouse drag दुवैको लागि) ══
+  let dragStartX = 0;
+  let dragging = false;
+  let dragMoved = 0;
+
+  function dragStart(x) {
+    dragStartX = x;
+    dragMoved = 0;
+    dragging = true;
+    if (timer) clearInterval(timer); // स्वाइप गर्दा auto-slide रोक्ने
+    track.style.transition = 'none';
+  }
+  function dragMove(x) {
+    if (!dragging) return;
+    dragMoved = x - dragStartX;
+    const pct = (dragMoved / wrap.clientWidth) * 100;
+    track.style.transform = `translateX(calc(-${current * 100}% + ${pct}%))`;
+  }
+  function dragEnd() {
+    if (!dragging) return;
+    dragging = false;
+    track.style.transition = ''; // CSS को transform 0.45s फेरि लागू हुने
+    if (Math.abs(dragMoved) > 40) {
+      goTo(current + (dragMoved < 0 ? 1 : -1));
+    } else {
+      goTo(current, true); // सानो movement भए आफ्नै स्लाइडमा फर्किने
+    }
+    startAuto();
+  }
+
   if (wrap) {
-    wrap.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    wrap.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
-    }, { passive: true });
+    // Touch (मोबाइल)
+    wrap.addEventListener('touchstart', e => dragStart(e.touches[0].clientX), { passive: true });
+    wrap.addEventListener('touchmove', e => dragMove(e.touches[0].clientX), { passive: true });
+    wrap.addEventListener('touchend', dragEnd, { passive: true });
+
+    // Mouse drag (डेस्कटप/ल्यापटपमा पनि स्वाइप जस्तै काम गरोस् भनेर)
+    wrap.addEventListener('mousedown', e => { e.preventDefault(); dragStart(e.clientX); });
+    window.addEventListener('mousemove', e => { if (dragging) dragMove(e.clientX); });
+    window.addEventListener('mouseup', () => { if (dragging) dragEnd(); });
   }
 
   db.collection('notices').orderBy('createdAt', 'asc').onSnapshot((snap) => {
