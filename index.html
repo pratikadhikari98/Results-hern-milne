@@ -214,15 +214,41 @@
     <!-- शिक्षकका लागि मात्र: कालोपाटीमा सूचना लेख्ने फारम -->
     <div class="post-form" id="noticeForm" style="display:none;">
       <select id="noticeTemplateSelect" onchange="applyNoticeTemplate()">
-        <option value="">— टेम्प्लेट छान्नुहोस् (वैकल्पिक) —</option>
-        <option value="notice">सामान्य सूचना</option>
-        <option value="holiday">बिदाको सूचना</option>
-        <option value="exam">परीक्षा तालिका सूचना</option>
-        <option value="event">कार्यक्रम/समारोह सूचना</option>
-        <option value="meeting">अभिभावक भेला सूचना</option>
+        <option value="">— टेम्प्लेट छान्नुहोस् —</option>
+        <option value="notice">📢 सामान्य सूचना</option>
+        <option value="holiday">🏖️ बिदाको सूचना</option>
+        <option value="result">🏆 नतिजा</option>
+        <option value="sports">⚽ खेलकुद</option>
+        <option value="meeting">👨‍👩‍👧 अभिभावक–शिक्षक बैठक</option>
+        <option value="exam">📝 परीक्षा सूचना</option>
+        <option value="special">📋 विशेष सूचना</option>
       </select>
+
+      <div class="notice-row-2">
+        <input type="text" id="noticeBadgeInput" placeholder="ब्याज (जस्तै: 📢 सूचना)">
+        <select id="noticeThemeSelect">
+          <option value="blue">🔵 निलो</option>
+          <option value="green">🟢 हरियो</option>
+          <option value="yellow">🟡 पहेंलो</option>
+          <option value="purple">🟣 बैजनी</option>
+          <option value="red">🔴 रातो</option>
+        </select>
+      </div>
+
+      <input type="text" id="noticeDateInput" placeholder="मिति (जस्तै: असार १५, २०८२)">
       <input type="text" id="noticeTitleInput" placeholder="शीर्षक लेख्नुहोस्">
-      <textarea id="noticeBodyInput" rows="3" placeholder="सूचनाको विवरण लेख्नुहोस्..."></textarea>
+      <textarea id="noticeBodyInput" rows="3" placeholder="सूचनाको विवरण लेख्नुहोस्... (छुट्टाछुट्टै लाइनका लागि Enter थिच्नुहोस्)"></textarea>
+      <input type="text" id="noticeFooterInput" placeholder="फुटर (जस्तै: विद्यालय प्रशासन)">
+
+      <label class="notice-table-toggle">
+        <input type="checkbox" id="noticeTableToggle" onchange="toggleNoticeTableFields()">
+        यो सूचना तालिका हो? (जस्तै: परीक्षा तालिका)
+      </label>
+      <div id="noticeTableFields" style="display:none;">
+        <input type="text" id="noticeTableHeaders" placeholder="स्तम्भका नाम, comma ले छुट्याएर (जस्तै: मिति,क-६,क-७,क-८)">
+        <textarea id="noticeTableRows" rows="4" placeholder="हरेक लाइनमा एउटा row, cell हरू comma ले छुट्याउनुहोस्&#10;जस्तै: २०८३/०३/१५,नेपाली,गणित,विज्ञान"></textarea>
+      </div>
+
       <div class="notice-form-actions">
         <button id="noticeSubmitBtn" onclick="submitNotice()">कालोपाटीमा लेख्नुहोस्</button>
         <button id="noticeCancelBtn" onclick="cancelNoticeEdit()" style="display:none;">रद्द गर्नुहोस्</button>
@@ -1023,49 +1049,115 @@ function sharePost(postId) {
 let lastNoticesSnapshot = [];
 let editingNoticeId = null;
 
+const THEME_COLORS = {
+  blue:   { bg: '#dbeafe', text: '#1e3a5f' },
+  green:  { bg: '#dcfce7', text: '#166534' },
+  yellow: { bg: '#fef9c3', text: '#854d0e' },
+  purple: { bg: '#ede9fe', text: '#5b21b6' },
+  red:    { bg: '#fee2e2', text: '#991b1b' }
+};
+
+// पहिलेको news/*.json फाइलहरूमा भएकै structure अनुसारका टेम्प्लेट
 const NOTICE_TEMPLATES = {
   notice: {
+    badge: '📢 सूचना', theme: 'blue',
     title: 'जरुरी सूचना',
-    body: 'सम्पूर्ण विद्यार्थी तथा अभिभावकहरूलाई जानकारी गराइन्छ कि...'
+    body: 'सम्पूर्ण विद्यार्थी तथा अभिभावकहरूलाई जानकारी गराइन्छ कि...',
+    footer: 'विद्यालय प्रशासन'
   },
   holiday: {
+    badge: '🏖️ बिदा सूचना', theme: 'red',
     title: 'बिदाको सूचना',
-    body: 'मिति ..... देखि ..... सम्म विद्यालय बिदा रहने भएकोले सबैलाई जानकारी गराइन्छ।'
+    body: 'मिति ..... देखि ..... सम्म विद्यालय बिदा रहने भएकोले सबैलाई जानकारी गराइन्छ।',
+    footer: 'विद्यालय प्रशासन'
   },
-  exam: {
-    title: 'परीक्षा तालिका सूचना',
-    body: 'त्रैमासिक/वार्षिक परीक्षा मिति ..... बाट सुरु हुने भएकोले विद्यार्थीहरूलाई तयारी गर्न अनुरोध छ।'
+  result: {
+    badge: '🏆 नतिजा', theme: 'green',
+    title: 'परीक्षाको नतिजा प्रकाशन',
+    body: 'यस वर्षको परीक्षाको नतिजा प्रकाशित भएको छ। सबै उत्तीर्ण विद्यार्थीलाई बधाई एवं शुभकामना।',
+    footer: 'परीक्षा शाखा'
   },
-  event: {
-    title: 'कार्यक्रम/समारोहको सूचना',
-    body: 'मिति ..... मा विद्यालयमा ..... कार्यक्रम आयोजना हुने भएकोले सबैलाई उपस्थित हुन अनुरोध छ।'
+  sports: {
+    badge: '⚽ खेलकुद', theme: 'yellow',
+    title: 'खेलकुद प्रतियोगिता सम्बन्धी सूचना',
+    body: 'विद्यालयको खेलकुद कार्यक्रम मिति ..... मा हुने भएकोले सहभागी हुन अनुरोध छ।',
+    footer: 'खेलकुद समिति'
   },
   meeting: {
-    title: 'अभिभावक भेलाको सूचना',
-    body: 'मिति ..... मा समय ..... बजे अभिभावक भेला हुने भएकोले सम्बन्धित सबैलाई अनिवार्य उपस्थित हुन अनुरोध गरिन्छ।'
+    badge: '👨‍👩‍👧 बैठक', theme: 'purple',
+    title: 'अभिभावक–शिक्षक बैठक',
+    body: 'आगामी मिति ..... गते विद्यालयमा अभिभावक–शिक्षक बैठक हुने भएकाले सबै अभिभावकहरूलाई समयमै उपस्थित हुन हार्दिक अनुरोध छ।',
+    footer: 'प्रधानाध्यापक कार्यालय'
+  },
+  exam: {
+    badge: '📝 परीक्षा', theme: 'yellow',
+    title: 'परीक्षा तालिका सूचना',
+    body: 'त्रैमासिक/वार्षिक परीक्षा मिति ..... बाट सुरु हुने भएकोले विद्यार्थीहरूलाई तयारी गर्न अनुरोध छ। (तल तालिका पनि थप्न सक्नुहुन्छ)',
+    footer: 'परीक्षा शाखा'
+  },
+  special: {
+    badge: '📋 विशेष सूचना', theme: 'red',
+    title: 'विशेष सूचना',
+    body: 'सम्पूर्ण विद्यार्थी तथा अभिभावकहरूलाई जरुरी जानकारी गराइन्छ कि...',
+    footer: 'विद्यालय प्रशासन'
   }
 };
 
 function applyNoticeTemplate() {
   const key = document.getElementById('noticeTemplateSelect').value;
   if (!key || !NOTICE_TEMPLATES[key]) return;
-  document.getElementById('noticeTitleInput').value = NOTICE_TEMPLATES[key].title;
-  document.getElementById('noticeBodyInput').value = NOTICE_TEMPLATES[key].body;
+  const t = NOTICE_TEMPLATES[key];
+  document.getElementById('noticeBadgeInput').value = t.badge;
+  document.getElementById('noticeThemeSelect').value = t.theme;
+  document.getElementById('noticeTitleInput').value = t.title;
+  document.getElementById('noticeBodyInput').value = t.body;
+  document.getElementById('noticeFooterInput').value = t.footer;
+}
+
+function toggleNoticeTableFields() {
+  const on = document.getElementById('noticeTableToggle').checked;
+  document.getElementById('noticeTableFields').style.display = on ? 'block' : 'none';
 }
 
 async function submitNotice() {
   if (!currentUser || !isTeacher) return;
-  const titleEl = document.getElementById('noticeTitleInput');
-  const bodyEl = document.getElementById('noticeBodyInput');
-  const title = titleEl.value.trim();
-  const body = bodyEl.value.trim();
-  if (!title || !body) { alert('कृपया शीर्षक र विवरण दुवै लेख्नुहोस्।'); return; }
+  const badge  = document.getElementById('noticeBadgeInput').value.trim();
+  const theme  = document.getElementById('noticeThemeSelect').value;
+  const date   = document.getElementById('noticeDateInput').value.trim();
+  const title  = document.getElementById('noticeTitleInput').value.trim();
+  const body   = document.getElementById('noticeBodyInput').value.trim();
+  const footer = document.getElementById('noticeFooterInput').value.trim();
+  const isTable = document.getElementById('noticeTableToggle').checked;
+
+  if (!title) { alert('कृपया शीर्षक लेख्नुहोस्।'); return; }
+  if (!isTable && !body) { alert('कृपया विवरण लेख्नुहोस्।'); return; }
+
+  const colors = THEME_COLORS[theme] || THEME_COLORS.blue;
+  const data = {
+    badge: badge || null,
+    badgeColor: colors.bg,
+    badgeText: colors.text,
+    date: date || null,
+    title, body: body || null,
+    footer: footer || null,
+    type: isTable ? 'table' : 'text'
+  };
+
+  if (isTable) {
+    const headers = document.getElementById('noticeTableHeaders').value.split(',').map(s => s.trim()).filter(Boolean);
+    const rows = document.getElementById('noticeTableRows').value.split('\n').map(r => r.trim()).filter(Boolean)
+      .map(r => r.split(',').map(c => c.trim()));
+    if (headers.length === 0 || rows.length === 0) { alert('कृपया तालिकाका स्तम्भ र row हरू भर्नुहोस्।'); return; }
+    data.headers = headers;
+    data.rows = rows;
+  }
+
   try {
     if (editingNoticeId) {
-      await db.collection('notices').doc(editingNoticeId).update({ title, body });
+      await db.collection('notices').doc(editingNoticeId).update(data);
     } else {
       await db.collection('notices').add({
-        title, body,
+        ...data,
         authorName: currentUser.displayName || currentUser.email,
         authorEmail: currentUser.email,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1081,8 +1173,24 @@ function editNotice(id) {
   const n = lastNoticesSnapshot.find(x => x.id === id);
   if (!n) return;
   editingNoticeId = id;
+  document.getElementById('noticeTemplateSelect').value = '';
+  document.getElementById('noticeBadgeInput').value = n.badge || '';
+  document.getElementById('noticeDateInput').value = n.date || '';
   document.getElementById('noticeTitleInput').value = n.title || '';
   document.getElementById('noticeBodyInput').value = n.body || '';
+  document.getElementById('noticeFooterInput').value = n.footer || '';
+
+  // theme select लाई stored रंगसँग मिलाउने
+  let themeKey = 'blue';
+  for (const k in THEME_COLORS) { if (THEME_COLORS[k].bg === n.badgeColor) { themeKey = k; break; } }
+  document.getElementById('noticeThemeSelect').value = themeKey;
+
+  const isTable = n.type === 'table';
+  document.getElementById('noticeTableToggle').checked = isTable;
+  toggleNoticeTableFields();
+  document.getElementById('noticeTableHeaders').value = isTable && n.headers ? n.headers.join(',') : '';
+  document.getElementById('noticeTableRows').value = isTable && n.rows ? n.rows.map(r => r.join(',')).join('\n') : '';
+
   document.getElementById('noticeSubmitBtn').textContent = 'अपडेट गर्नुहोस्';
   document.getElementById('noticeCancelBtn').style.display = 'inline-block';
   document.getElementById('noticeForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1091,8 +1199,16 @@ function editNotice(id) {
 function cancelNoticeEdit() {
   editingNoticeId = null;
   document.getElementById('noticeTemplateSelect').value = '';
+  document.getElementById('noticeBadgeInput').value = '';
+  document.getElementById('noticeThemeSelect').value = 'blue';
+  document.getElementById('noticeDateInput').value = '';
   document.getElementById('noticeTitleInput').value = '';
   document.getElementById('noticeBodyInput').value = '';
+  document.getElementById('noticeFooterInput').value = '';
+  document.getElementById('noticeTableToggle').checked = false;
+  document.getElementById('noticeTableHeaders').value = '';
+  document.getElementById('noticeTableRows').value = '';
+  toggleNoticeTableFields();
   document.getElementById('noticeSubmitBtn').textContent = 'कालोपाटीमा लेख्नुहोस्';
   document.getElementById('noticeCancelBtn').style.display = 'none';
 }
@@ -1118,8 +1234,8 @@ function renderNoticeManageList() {
   box.innerHTML = lastNoticesSnapshot.map(n => `
     <div class="notice-manage-item">
       <div class="notice-manage-text">
-        <b>${escapeHtml(n.title || '')}</b>
-        <span>${escapeHtml(n.body || '')}</span>
+        <b>${escapeHtml(n.badge ? n.badge + ' — ' : '')}${escapeHtml(n.title || '')}</b>
+        <span>${escapeHtml(n.date || '')}${n.type === 'table' ? ' · तालिका' : ''}</span>
       </div>
       <div class="notice-manage-actions">
         <button onclick="editNotice('${n.id}')">✏️ Edit</button>
@@ -1137,6 +1253,13 @@ function renderNoticeManageList() {
   let current = 0;
   let timer = null;
 
+  function buildTable(n) {
+    if (n.type !== 'table' || !n.headers || !n.rows) return '';
+    const thead = `<tr>${n.headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
+    const tbody = n.rows.map(r => `<tr>${r.map(c => `<td>${escapeHtml(c)}</td>`).join('')}</tr>`).join('');
+    return `<div class="bb-table-wrap"><table class="bb-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
+  }
+
   function render() {
     const slides = lastNoticesSnapshot;
     track.innerHTML = '';
@@ -1149,9 +1272,16 @@ function renderNoticeManageList() {
     slides.forEach((s, i) => {
       const el = document.createElement('div');
       el.className = 'bb-slide' + (i === 0 ? ' active' : '');
+      const topRow = (s.badge || s.date) ? `<div class="bb-top-row">
+          ${s.badge ? `<span class="bb-badge" style="background:${s.badgeColor || '#dbeafe'};color:${s.badgeText || '#1e3a5f'}">${escapeHtml(s.badge)}</span>` : '<span></span>'}
+          ${s.date ? `<span class="bb-date">${escapeHtml(s.date)}</span>` : ''}
+        </div>` : '';
       const bodyLines = (s.body || '').split('\n').filter(Boolean)
         .map(line => `<div class="bb-line">${escapeHtml(line)}</div>`).join('');
-      el.innerHTML = `<div class="bb-heading">${escapeHtml(s.title || '')}</div><div class="bb-lines">${bodyLines}</div>`;
+      el.innerHTML = `${topRow}<div class="bb-heading">${escapeHtml(s.title || '')}</div>` +
+        (bodyLines ? `<div class="bb-lines">${bodyLines}</div>` : '') +
+        buildTable(s) +
+        (s.footer ? `<div class="bb-footer">— ${escapeHtml(s.footer)}</div>` : '');
       track.appendChild(el);
 
       const dot = document.createElement('span');
