@@ -198,9 +198,12 @@
 <section class="news-section" id="notices">
   <div class="news-inner">
 
+    <div class="notice-panel-title">
+      <span>सूचना-पाटी</span>
+    </div>
+
     <!-- Blackboard with slides inside -->
     <div class="bb-outer">
-      <div class="bb-badge-external" id="bbBadgeExternal"></div>
       <div class="bb-wrap" id="bbWrap">
         <img src="photos/blackboard.png" alt="कालोपाटी" class="bb-bg">
         <!-- text viewport = chalk-writing area only -->
@@ -216,13 +219,16 @@
 
     <!-- शिक्षकका लागि मात्र: कालोपाटीमा सूचना लेख्ने फारम -->
     <div class="post-form" id="noticeForm" style="display:none;">
-      <div class="post-form-head">
+      <div class="post-form-head" id="noticeFormHead" onclick="toggleNoticeFormBody()">
         <span class="post-form-icon">📝</span>
         <div>
           <div class="post-form-title">नयाँ सूचना लेख्नुहोस्</div>
           <div class="post-form-sub">कालोपाटीमा देखिने सूचना यहाँबाट तयार गर्नुहोस्</div>
         </div>
+        <button type="button" class="post-form-toggle" id="noticeFormToggleBtn" aria-label="फारम खोल्नुहोस्">➕</button>
       </div>
+
+      <div class="post-form-body" id="noticeFormBody" style="display:none;">
 
       <div class="field-group">
         <label class="field-label" for="noticeTemplateSelect">टेम्प्लेट</label>
@@ -240,21 +246,15 @@
         </div>
       </div>
 
-      <div class="notice-row-2">
-        <div class="field-group">
-          <label class="field-label" for="noticeBadgeInput">ब्याज</label>
-          <input type="text" id="noticeBadgeInput" placeholder="जस्तै: 📢 सूचना">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="noticeFontSelect">फन्ट</label>
-          <div class="select-wrap">
-            <select id="noticeFontSelect">
-              <option value="akshar">Akshar (डिफल्ट)</option>
-              <option value="khand">Khand</option>
-              <option value="noto-serif">Noto Serif</option>
-              <option value="siddhanta">Siddhanta</option>
-            </select>
-          </div>
+      <div class="field-group">
+        <label class="field-label" for="noticeFontSelect">फन्ट</label>
+        <div class="select-wrap">
+          <select id="noticeFontSelect">
+            <option value="akshar">Akshar (डिफल्ट)</option>
+            <option value="khand">Khand</option>
+            <option value="noto-serif">Noto Serif</option>
+            <option value="siddhanta">Siddhanta</option>
+          </select>
         </div>
       </div>
 
@@ -300,6 +300,8 @@
         <button id="noticeSubmitBtn" onclick="submitNotice()"><span>✏️</span>कालोपाटीमा लेख्नुहोस्</button>
         <button id="noticeCancelBtn" onclick="cancelNoticeEdit()" style="display:none;">रद्द गर्नुहोस्</button>
       </div>
+
+      </div><!-- /.post-form-body -->
     </div>
 
     <!-- शिक्षकका लागि मात्र: पहिले लेखिएका सूचनाहरूको सूची (edit/delete) -->
@@ -1106,43 +1108,36 @@ const FONT_STACKS = {
 // पहिलेको news/*.json फाइलहरूमा भएकै structure अनुसारका टेम्प्लेट
 const NOTICE_TEMPLATES = {
   notice: {
-    badge: '📢 सूचना',
     title: 'जरुरी सूचना',
     body: 'सम्पूर्ण विद्यार्थी तथा अभिभावकहरूलाई जानकारी गराइन्छ कि...',
     footer: 'विद्यालय प्रशासन'
   },
   holiday: {
-    badge: '🏖️ बिदा सूचना',
     title: 'बिदाको सूचना',
     body: 'मिति ..... देखि ..... सम्म विद्यालय बिदा रहने भएकोले सबैलाई जानकारी गराइन्छ।',
     footer: 'विद्यालय प्रशासन'
   },
   result: {
-    badge: '🏆 नतिजा',
     title: 'परीक्षाको नतिजा प्रकाशन',
     body: 'यस वर्षको परीक्षाको नतिजा प्रकाशित भएको छ। सबै उत्तीर्ण विद्यार्थीलाई बधाई एवं शुभकामना।',
     footer: 'परीक्षा शाखा'
   },
   sports: {
-    badge: '⚽ खेलकुद',
     title: 'खेलकुद प्रतियोगिता सम्बन्धी सूचना',
     body: 'विद्यालयको खेलकुद कार्यक्रम मिति ..... मा हुने भएकोले सहभागी हुन अनुरोध छ।',
     footer: 'खेलकुद समिति'
   },
   meeting: {
-    badge: '👨‍👩‍👧 बैठक',
     title: 'अभिभावक–शिक्षक बैठक',
     body: 'आगामी मिति ..... गते विद्यालयमा अभिभावक–शिक्षक बैठक हुने भएकाले सबै अभिभावकहरूलाई समयमै उपस्थित हुन हार्दिक अनुरोध छ।',
     footer: 'प्रधानाध्यापक कार्यालय'
   },
   exam: {
-    badge: '📝 परीक्षा',
     title: 'परीक्षा तालिका सूचना',
     body: 'त्रैमासिक/वार्षिक परीक्षा मिति ..... बाट सुरु हुने भएकोले विद्यार्थीहरूलाई तयारी गर्न अनुरोध छ। (तल तालिका पनि थप्न सक्नुहुन्छ)',
     footer: 'परीक्षा शाखा'
   },
   special: {
-    badge: '📋 विशेष सूचना',
     title: 'विशेष सूचना',
     body: 'सम्पूर्ण विद्यार्थी तथा अभिभावकहरूलाई जरुरी जानकारी गराइन्छ कि...',
     footer: 'विद्यालय प्रशासन'
@@ -1153,10 +1148,24 @@ function applyNoticeTemplate() {
   const key = document.getElementById('noticeTemplateSelect').value;
   if (!key || !NOTICE_TEMPLATES[key]) return;
   const t = NOTICE_TEMPLATES[key];
-  document.getElementById('noticeBadgeInput').value = t.badge;
   document.getElementById('noticeTitleInput').value = t.title;
   document.getElementById('noticeBodyInput').value = t.body;
   document.getElementById('noticeFooterInput').value = t.footer;
+}
+
+function toggleNoticeFormBody() {
+  const body = document.getElementById('noticeFormBody');
+  const btn = document.getElementById('noticeFormToggleBtn');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  btn.textContent = isOpen ? '➕' : '➖';
+  btn.setAttribute('aria-label', isOpen ? 'फारम खोल्नुहोस्' : 'फारम बन्द गर्नुहोस्');
+}
+
+function openNoticeForm() {
+  document.getElementById('noticeFormBody').style.display = 'block';
+  document.getElementById('noticeFormToggleBtn').textContent = '➖';
+  document.getElementById('noticeFormToggleBtn').setAttribute('aria-label', 'फारम बन्द गर्नुहोस्');
 }
 
 function toggleNoticeTableFields() {
@@ -1225,7 +1234,6 @@ function removeTableRow(r) {
 
 async function submitNotice() {
   if (!currentUser || !isTeacher) return;
-  const badge  = document.getElementById('noticeBadgeInput').value.trim();
   const font   = document.getElementById('noticeFontSelect').value;
   const date   = document.getElementById('noticeDateInput').value.trim();
   const title  = document.getElementById('noticeTitleInput').value.trim();
@@ -1237,7 +1245,6 @@ async function submitNotice() {
   if (!isTable && !body) { alert('कृपया विवरण लेख्नुहोस्।'); return; }
 
   const data = {
-    badge: badge || null,
     font: font || 'akshar',
     date: date || null,
     title, body: body || null,
@@ -1277,7 +1284,6 @@ function editNotice(id) {
   if (!n) return;
   editingNoticeId = id;
   document.getElementById('noticeTemplateSelect').value = '';
-  document.getElementById('noticeBadgeInput').value = n.badge || '';
   document.getElementById('noticeDateInput').value = n.date || '';
   document.getElementById('noticeTitleInput').value = n.title || '';
   document.getElementById('noticeBodyInput').value = n.body || '';
@@ -1298,15 +1304,15 @@ function editNotice(id) {
   renderTableBuilder();
   toggleNoticeTableFields();
 
-  document.getElementById('noticeSubmitBtn').textContent = 'अपडेट गर्नुहोस्';
+  document.getElementById('noticeSubmitBtn').innerHTML = '<span>✏️</span>अपडेट गर्नुहोस्';
   document.getElementById('noticeCancelBtn').style.display = 'inline-block';
+  openNoticeForm();
   document.getElementById('noticeForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function cancelNoticeEdit() {
   editingNoticeId = null;
   document.getElementById('noticeTemplateSelect').value = '';
-  document.getElementById('noticeBadgeInput').value = '';
   document.getElementById('noticeFontSelect').value = 'akshar';
   document.getElementById('noticeDateInput').value = '';
   document.getElementById('noticeTitleInput').value = '';
@@ -1317,7 +1323,7 @@ function cancelNoticeEdit() {
   tableRows = [];
   renderTableBuilder();
   toggleNoticeTableFields();
-  document.getElementById('noticeSubmitBtn').textContent = 'कालोपाटीमा लेख्नुहोस्';
+  document.getElementById('noticeSubmitBtn').innerHTML = '<span>✏️</span>कालोपाटीमा लेख्नुहोस्';
   document.getElementById('noticeCancelBtn').style.display = 'none';
 }
 
@@ -1342,7 +1348,7 @@ function renderNoticeManageList() {
   box.innerHTML = lastNoticesSnapshot.map(n => `
     <div class="notice-manage-item">
       <div class="notice-manage-text">
-        <b>${escapeHtml(n.badge ? n.badge + ' — ' : '')}${escapeHtml(n.title || '')}</b>
+        <b>${escapeHtml(n.title || '')}</b>
         <span>${escapeHtml(n.date || '')}${n.type === 'table' ? ' · तालिका' : ''}</span>
       </div>
       <div class="notice-manage-actions">
@@ -1357,7 +1363,6 @@ function renderNoticeManageList() {
   const track   = document.getElementById('bbTrack');
   const dotsBox = document.getElementById('bbDots');
   const wrap    = document.getElementById('bbWrap');
-  const badgeExternal = document.getElementById('bbBadgeExternal');
 
   let realCount = 0;   // कति वटा साँच्चिकै सूचना छन्
   let pos       = 0;   // track मा हालको position (clone सहित index)
@@ -1379,7 +1384,6 @@ function renderNoticeManageList() {
     const el = document.createElement('div');
     el.className = 'bb-slide';
     el.style.setProperty('--bb-font', FONT_STACKS[s.font] || FONT_STACKS.akshar);
-    // ब्याज अब ब्ल्याकबोर्ड भित्र होइन, बाहिर देखिन्छ (bbBadgeExternal) — यहाँ मितिमात्र
     const topRow = s.date ? `<div class="bb-top-row"><span class="bb-date">${escapeHtml(s.date)}</span></div>` : '';
     const bodyLines = (s.body || '').split('\n').filter(Boolean)
       .map(line => `<div class="bb-line">${escapeHtml(line)}</div>`).join('');
@@ -1402,20 +1406,6 @@ function renderNoticeManageList() {
     dotEls.forEach((d, i) => d.classList.toggle('active', i === realIndex));
   }
 
-  // ब्ल्याकबोर्ड बाहिरको ब्याज ट्यागलाई हालको स्लाइडसँग मिलाएर अपडेट गर्ने
-  function updateBadge(realIndex) {
-    const s = lastNoticesSnapshot[realIndex];
-    if (!badgeExternal) return;
-    if (!s || !s.badge) {
-      badgeExternal.style.display = 'none';
-      badgeExternal.textContent = '';
-      return;
-    }
-    badgeExternal.textContent = s.badge;
-    badgeExternal.style.display = 'inline-block';
-    badgeExternal.style.fontFamily = FONT_STACKS[s.font] || FONT_STACKS.akshar;
-  }
-
   function render() {
     const slides = lastNoticesSnapshot;
     track.innerHTML = '';
@@ -1423,7 +1413,6 @@ function renderNoticeManageList() {
     realCount = slides.length;
     if (realCount === 0) {
       track.innerHTML = '<div class="bb-loading-msg">हाल कुनै सूचना छैन।</div>';
-      if (badgeExternal) badgeExternal.style.display = 'none';
       return;
     }
     looping = realCount > 1;
@@ -1442,7 +1431,6 @@ function renderNoticeManageList() {
 
     pos = looping ? 1 : 0; // looping भए clone को कारणले वास्तविक पहिलो सूचना index 1 मा हुन्छ
     setTrackPos(pos, false);
-    updateBadge(0);
     startAuto();
   }
 
@@ -1458,7 +1446,6 @@ function renderNoticeManageList() {
     pos = looping ? (i + 1) : 0;
     setTrackPos(pos, true);
     updateDots(i);
-    updateBadge(i);
   }
 
   // clone मा पुगेपछि छेउमै (बिना animation) साँच्चिकै स्लाइडमा snap back गर्ने → अनन्त feel
@@ -1473,7 +1460,6 @@ function renderNoticeManageList() {
     }
     const realIndex = ((pos - 1) + realCount) % realCount;
     updateDots(realIndex);
-    updateBadge(realIndex);
   });
 
   function startAuto() {
