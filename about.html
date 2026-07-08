@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>बारेमा - कालिका मानवज्ञान माध्यमिक विद्यालय</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a3a6b">
+<link rel="apple-touch-icon" href="icon-192.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link href="https://fonts.googleapis.com/css2?family=Akshar:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700;900&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* यो पेजमा header सधैं सामान्य (responsive) तरिकाले देखिन्छ, desktop-forced होइन */
+  #siteHeader { position: sticky !important; top: 0 !important; width: 100% !important; transform: none !important; }
+  #headerSpacer { display: none !important; }
+  .about-page-inner { max-width: 1080px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="siteHeader">
+  <div class="logo-area">
+    <div class="logo-circle">
+      <svg viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="34" cy="34" r="32" fill="#eaf5fb" stroke="#1e5aa8" stroke-width="2"/>
+        <circle cx="34" cy="34" r="26" fill="none" stroke="#1e5aa8" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="34" y="22" text-anchor="middle" font-size="7" fill="#1a3a6b" font-family="Noto Sans Devanagari,sans-serif" font-weight="bold">कालिका</text>
+        <rect x="22" y="26" width="20" height="13" rx="2" fill="#1e5aa8"/>
+        <rect x="21" y="23" width="26" height="5" rx="1.5" fill="#3b82d1"/>
+        <line x1="34" y1="39" x2="34" y2="45" stroke="#1a3a6b" stroke-width="2"/>
+        <line x1="27" y1="45" x2="41" y2="45" stroke="#1a3a6b" stroke-width="2"/>
+        <text x="34" y="56" text-anchor="middle" font-size="5.5" fill="#1e5aa8" font-family="sans-serif">Btl-10</text>
+      </svg>
+    </div>
+    <div class="school-name">
+      <h1>कालिका मानवज्ञान<br>माध्यमिक विद्यालय</h1>
+      <p>KALIKA MANAVGYAN SECONDARY SCHOOL</p>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">गृहपृष्ठ</a>
+    <a href="about.html" class="active">बारेमा</a>
+    <a href="index.html#community">समुदाय</a>
+    <a href="#contact">सम्पर्क</a>
+    <a href="index.html#admission" class="btn-admit">भर्ना खुला</a>
+  </nav>
+  <div class="auth-box" id="authBox">
+    <button class="auth-btn" id="loginBtn" onclick="loginWithGoogle()">🔑 लगइन</button>
+  </div>
+</header>
+
+<div class="about-page-inner">
+
+  <!-- WHY -->
+  <section class="why-section" id="why">
+    <div class="section-label">हाम्रा विशेषताहरू</div>
+    <div class="section-title">अभिभावकहरूले खोज्ने सबै कुरा हामीसँग छ</div>
+    <p class="section-sub">तपाईँको नानीबाबुको उज्ज्वल भविष्यका लागि हामी निरन्तर प्रतिबद्ध छौँ।</p>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">🚌</div><h3>सुरक्षित यातायात</h3><p>विद्यालयको आफ्नै बस सेवाद्वारा सुरक्षित आवातजावात।</p></div>
+      <div class="feature-card"><div class="feature-icon">💧</div><h3>शुद्ध पिउने पानी</h3><p>RO फिल्टर प्रणालीद्वारा सधैँ शुद्ध पानी उपलब्ध।</p></div>
+      <div class="feature-card"><div class="feature-icon">🔬</div><h3>प्रयोगशाला सुविधा</h3><p>विज्ञान, कम्प्युटर र भाषा प्रयोगशाला — व्यावहारिक सिकाइका लागि।</p></div>
+      <div class="feature-card"><div class="feature-icon">💻</div><h3>डिजिटल कक्षाकोठा</h3><p>स्मार्ट बोर्ड र डिजिटल प्रविधिमार्फत आधुनिक शिक्षण।</p></div>
+      <div class="feature-card"><div class="feature-icon">🎨</div><h3>सिर्जनात्मक गतिविधि</h3><p>कला, संगीत, नृत्य र सांस्कृतिक कार्यक्रमहरू।</p></div>
+      <div class="feature-card"><div class="feature-icon">⚽</div><h3>खेलकुद गतिविधि</h3><p>खेलमैदान, योग कक्षा र राष्ट्रिय प्रतियोगिताहरू।</p></div>
+      <div class="feature-card"><div class="feature-icon">👨‍👩‍👧</div><h3>अभिभावक सहभागिता</h3><p>नियमित अभिभावक–शिक्षक बैठक र प्रगति रिपोर्ट।</p></div>
+    </div>
+  </section>
+
+  <!-- NEWS / BLACKBOARD SECTION -->
+  <section class="news-section" id="notices">
+    <div class="news-inner">
+
+      <!-- Blackboard with slides inside -->
+      <div class="bb-wrap" id="bbWrap">
+        <img src="photos/blackboard.png" alt="कालोपाटी" class="bb-bg">
+        <!-- text viewport = chalk-writing area only -->
+        <div class="bb-viewport">
+          <div class="bb-track" id="bbTrack">
+            <div class="bb-loading-msg" id="bbLoading">सूचना लोड हुँदैछ...</div>
+          </div>
+        </div>
+        <!-- chalk dots inside the board (below writing area) -->
+        <div class="bb-dots" id="bbDots"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PHOTO GALLERY SECTION -->
+  <section class="gallery-section" id="gallery">
+    <div class="section-label">तस्बिरहरू</div>
+    <div class="section-title">विद्यालयका झलकहरू</div>
+    <p class="section-sub">हाम्रा विशेष कार्यक्रम, कक्षाकोठा र विद्यार्थीहरूका यादगार पलहरू।</p>
+    <div class="gallery-grid" id="galleryGrid">
+      <div class="gallery-loading">तस्बिरहरू लोड हुँदैछन्…</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lb-backdrop" id="lbBackdrop" onclick="closeLb(event)">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <img class="lb-img" id="lbImg" src="" alt="">
+  <div class="lb-caption" id="lbCaption"></div>
+</div>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>कालिका मानवज्ञान माध्यमिक विद्यालय</h4>
+      <p>गुणस्तरीय शिक्षा प्रदान गरी बच्चाहरूको सर्वाङ्गीण विकासमा समर्पित।</p>
+    </div>
+    <div class="footer-col">
+      <h4>द्रुत लिङ्कहरू</h4>
+      <a href="index.html#home">गृहपृष्ठ</a>
+      <a href="about.html#why">विशेषताहरू</a>
+      <a href="about.html#notices">सूचना पाटी</a>
+      <a href="index.html#admission">भर्ना</a>
+    </div>
+    <div class="footer-col">
+      <h4>सम्पर्क</h4>
+      <p>📞 071-437072</p>
+      <p>📍 Butwal-10, Kalikanagar, Rupendehi</p>
+      <a href="http://www.kalikaschoolbtl.edu.np">🌐 www.kalikaschoolbtl.edu.np</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© २०८२ कालिका मानवज्ञान माध्यमिक विद्यालय। सर्वाधिकार सुरक्षित।</span>
+    <span>Butwal-10, Kalikanagar</span>
+  </div>
+</footer>
+
+<!-- BOTTOM APP BAR -->
+<div class="bottom-app-bar">
+  <div class="bottom-app-bar-inner">
+    <a href="index.html#home" class="app-icon-btn" title="गृहपृष्ठ"><span>🏠</span></a>
+    <a href="index.html#community" class="app-icon-btn" title="समुदाय"><span>👥</span></a>
+    <a href="about.html" class="app-icon-btn" title="बारेमा"><span>ℹ️</span></a>
+    <a href="#gallery" class="app-icon-btn" title="ग्यालरी"><span>🖼️</span></a>
+    <a href="#contact" class="app-icon-btn" title="सम्पर्क"><span>☎️</span></a>
+  </div>
+</div>
+
+<script>
+// ══ BLACKBOARD — एकतर्फी अनन्त loop, auto-slide, swipe support ══
+(async function () {
+  const FILES = [
+    'news/news10.json',
+    'news/news1.json',
+    'news/news2.json',
+    'news/news3.json',
+    'news/news4.json',
+    'news/news5.json',
+    'news/news6.json',
+    'news/news7.json',
+    'news/news8.json',
+    'news/news9.json'
+  ];
+  const track   = document.getElementById('bbTrack');
+  const dotsBox = document.getElementById('bbDots');
+  const wrap    = document.getElementById('bbWrap');
+  let slides = [];
+
+  async function loadSlides() {
+    const results = await Promise.all(FILES.map(f => fetch(f).then(r => r.ok ? r.json() : null).catch(() => null)));
+    slides = results.filter(Boolean);
+    if (slides.length === 0) {
+      track.innerHTML = '<div class="bb-loading-msg">हाल कुनै सूचना छैन।</div>';
+      return;
+    }
+    render();
+  }
+
+  let current = 0;
+  let timer = null;
+
+  function render() {
+    track.innerHTML = '';
+    dotsBox.innerHTML = '';
+    slides.forEach((s, i) => {
+      const el = document.createElement('div');
+      el.className = 'bb-slide' + (i === 0 ? ' active' : '');
+      el.innerHTML = `<h3>${s.title || ''}</h3><p>${s.body || ''}</p>`;
+      track.appendChild(el);
+
+      const dot = document.createElement('span');
+      dot.className = 'bb-dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goTo(i);
+      dotsBox.appendChild(dot);
+    });
+    startAuto();
+  }
+
+  function goTo(i) {
+    const slideEls = track.querySelectorAll('.bb-slide');
+    const dotEls = dotsBox.querySelectorAll('.bb-dot');
+    if (!slideEls.length) return;
+    slideEls[current].classList.remove('active');
+    dotEls[current].classList.remove('active');
+    current = (i + slides.length) % slides.length;
+    slideEls[current].classList.add('active');
+    dotEls[current].classList.add('active');
+  }
+
+  function startAuto() {
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => goTo(current + 1), 5000);
+  }
+
+  // Swipe support
+  let touchStartX = 0;
+  if (wrap) {
+    wrap.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+  }
+
+  loadSlides();
+})();
+</script>
+
+<script>
+// ══ PHOTO GALLERY ══
+async function loadGallery() {
+  const grid = document.getElementById('galleryGrid');
+  try {
+    const res = await fetch('photos/description.json');
+    if (!res.ok) throw new Error('not found');
+    const data = await res.json(); // [{file:"post1.jpg", desc:"..."}]
+    grid.innerHTML = '';
+    data.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'gallery-card';
+      card.innerHTML = `<img src="photos/${item.file}" alt="${item.desc}" loading="lazy">
+        <div class="g-desc">${item.desc}</div>`;
+      card.querySelector('img').onclick = () => openLb('photos/' + item.file, item.desc);
+      grid.appendChild(card);
+    });
+    if (data.length === 0) grid.innerHTML = '<div class="gallery-loading">तस्बिरहरू छैनन्।</div>';
+  } catch {
+    grid.innerHTML = '<div class="gallery-loading">तस्बिरहरू लोड हुन सकेन। <code>photos/description.json</code> फाइल राख्नुहोस्।</div>';
+  }
+}
+
+function openLb(src, caption) {
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbCaption').textContent = caption;
+  document.getElementById('lbBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb(e) {
+  if (e && e.target !== e.currentTarget && e.target.tagName === 'IMG') return;
+  document.getElementById('lbBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+loadGallery();
+</script>
+
+<!-- FIREBASE: लगइन (header मा login/logout देखाउनका लागि मात्र) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBO5KZq2WLLDCX8eZoL53jxCGqgNJLG-ts",
+  authDomain: "durga-d8936.firebaseapp.com",
+  projectId: "durga-d8936",
+  storageBucket: "durga-d8936.firebasestorage.app",
+  messagingSenderId: "290047636515",
+  appId: "1:290047636515:web:8ffab23a344c2544c22d96",
+  measurementId: "G-ZK11P0FG4Z"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+let currentUser = null;
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+
+function loginWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(err => {
+    alert('लगइन गर्न सकिएन: ' + err.message);
+  });
+}
+
+function logout() { auth.signOut(); }
+
+function renderAuthBox() {
+  const box = document.getElementById('authBox');
+  if (!box) return;
+  if (currentUser) {
+    const initial = (currentUser.email || '?').trim().charAt(0).toUpperCase();
+    box.innerHTML = `
+      <div class="auth-user" title="${escapeHtml(currentUser.email)}">
+        <span class="auth-avatar">${initial}</span>
+      </div>
+      <button class="auth-logout" onclick="logout()">लगआउट</button>`;
+  } else {
+    box.innerHTML = `<button class="auth-btn" onclick="loginWithGoogle()">🔑 लगइन</button>`;
+  }
+}
+
+auth.onAuthStateChanged((user) => {
+  currentUser = user;
+  renderAuthBox();
+});
+</script>
+
+<!-- PWA SERVICE WORKER -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
