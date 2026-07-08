@@ -1211,7 +1211,8 @@ async function submitNotice() {
     const hasContent = rows.some(row => row.some(c => c !== ''));
     if (headers.length === 0 || !hasContent) { alert('कृपया तालिकाका स्तम्भ र कम्तिमा एउटा row भर्नुहोस्।'); return; }
     data.headers = headers;
-    data.rows = rows;
+    // Firestore मा array-भित्र-array (nested array) सपोर्ट हुँदैन, त्यसैले हरेक row लाई {cells:[...]} object मा राख्ने
+    data.rows = rows.map(r => ({ cells: r }));
   }
 
   try {
@@ -1248,7 +1249,8 @@ function editNotice(id) {
   document.getElementById('noticeTableToggle').checked = isTable;
   if (isTable && n.headers && n.rows) {
     tableColumns = [...n.headers];
-    tableRows = n.rows.map(r => [...r]);
+    // पुरानो format (raw array) र नयाँ format ({cells:[...]}) दुवैसँग compatible
+    tableRows = n.rows.map(r => Array.isArray(r) ? [...r] : [...(r.cells || [])]);
   } else {
     tableColumns = [];
     tableRows = [];
@@ -1325,7 +1327,11 @@ function renderNoticeManageList() {
   function buildTable(n) {
     if (n.type !== 'table' || !n.headers || !n.rows) return '';
     const thead = `<tr>${n.headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
-    const tbody = n.rows.map(r => `<tr>${r.map(c => `<td>${escapeHtml(c)}</td>`).join('')}</tr>`).join('');
+    // पुरानो format (raw array) र नयाँ format ({cells:[...]}) दुवैसँग compatible
+    const tbody = n.rows.map(r => {
+      const cells = Array.isArray(r) ? r : (r.cells || []);
+      return `<tr>${cells.map(c => `<td>${escapeHtml(c)}</td>`).join('')}</tr>`;
+    }).join('');
     return `<div class="bb-table-wrap"><table class="bb-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
   }
 
