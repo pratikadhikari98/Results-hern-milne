@@ -230,34 +230,34 @@
   .post-title { font-weight: 700; font-size: 1.02rem; margin-bottom: 6px; color: var(--text); }
   .post-body { font-size: 0.89rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; margin-bottom: 12px; }
   .post-actions { display: flex; gap: 8px; border-top: 1px solid #eef3f9; padding-top: 10px; }
-  .post-action-btn { background: none; border: none; display: flex; align-items: center; gap: 6px; font-size: 0.83rem; font-weight: 600; color: var(--text-light); cursor: pointer; padding: 8px 12px; border-radius: 20px; transition: background .18s, color .18s, transform .12s; flex: 1; justify-content: center; }
+  .post-action-btn { background: none; border: none; display: flex; align-items: center; gap: 6px; font-size: 0.83rem; font-weight: 600; color: var(--text-light); cursor: pointer; padding: 8px 12px; border-radius: 20px; transition: background .25s cubic-bezier(.4,0,.2,1), color .25s cubic-bezier(.4,0,.2,1), transform .2s cubic-bezier(.4,0,.2,1); flex: 1; justify-content: center; }
   .post-action-btn:hover { background: var(--sky-pale); color: var(--blue-mid); transform: translateY(-1px); }
-  .post-action-btn:active { transform: scale(0.94); }
+  .post-action-btn:active { transform: scale(0.96); }
   .post-action-btn.liked { color: var(--red); }
-  .post-action-btn .like-icon, .post-action-btn .comment-icon, .post-action-btn .share-icon { display: flex; align-items: center; justify-content: center; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+  .post-action-btn .like-icon, .post-action-btn .comment-icon, .post-action-btn .share-icon { display: flex; align-items: center; justify-content: center; transition: transform .3s cubic-bezier(.4,0,.2,1); }
   .post-action-btn .like-icon svg, .post-action-btn .comment-icon svg, .post-action-btn .share-icon svg { display: block; }
-  .post-action-btn .like-icon svg path { transition: fill .18s ease; }
+  .post-action-btn .like-icon svg path { transition: fill .25s ease; }
   .post-action-btn.liked .like-icon svg path { fill: currentColor; }
-  .like-count { font-size: 0.8rem; font-weight: 700; min-width: 10px; text-align: left; }
-  .post-action-btn.liked .like-icon { animation: likeBounce .38s cubic-bezier(.34,1.56,.64,1); }
-  .post-action-btn.like-burst .like-icon { transform: scale(1.35); }
+  .like-count { font-size: 0.8rem; font-weight: 700; min-width: 10px; text-align: left; transition: color .25s ease; }
+  .post-action-btn.liked .like-icon { animation: likeBounce .5s cubic-bezier(.22,1,.36,1); }
+  .post-action-btn.like-burst .like-icon { transform: scale(1.2); }
   .post-action-btn.comments-active { background: var(--sky-pale); color: var(--blue-mid); }
-  .post-action-btn.comments-active .comment-icon { transform: rotate(-8deg) scale(1.1); }
-  .post-action-btn:hover .share-icon { transform: rotate(-18deg) scale(1.1); }
-  .post-action-btn.share-pulse { background: #e6f7ec; color: #1f8a4c; animation: sharePulse .5s ease; }
-  @keyframes likeBounce { 0% { transform: scale(1); } 35% { transform: scale(1.5); } 60% { transform: scale(0.85); } 100% { transform: scale(1); } }
-  @keyframes sharePulse { 0% { transform: scale(1); } 40% { transform: scale(1.08); } 100% { transform: scale(1); } }
-  .like-particle { position: fixed; z-index: 999; font-size: 1rem; pointer-events: none; transform: translate(-50%, -50%); animation: likeFloat .68s ease-out forwards; }
+  .post-action-btn.comments-active .comment-icon { transform: rotate(-6deg) scale(1.08); }
+  .post-action-btn:hover .share-icon { transform: rotate(-14deg) scale(1.08); }
+  .post-action-btn.share-pulse { background: #e6f7ec; color: #1f8a4c; animation: sharePulse .6s cubic-bezier(.22,1,.36,1); }
+  @keyframes likeBounce { 0% { transform: scale(1); } 40% { transform: scale(1.28); } 70% { transform: scale(0.94); } 100% { transform: scale(1); } }
+  @keyframes sharePulse { 0% { transform: scale(1); } 45% { transform: scale(1.06); } 100% { transform: scale(1); } }
+  .like-particle { position: fixed; z-index: 999; font-size: 1rem; pointer-events: none; transform: translate(-50%, -50%); animation: likeFloat .85s cubic-bezier(.22,1,.36,1) forwards; }
   @keyframes likeFloat {
-    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.6); }
-    30% { opacity: 1; transform: translate(calc(-50% + var(--tx) * 0.4), calc(-50% + var(--ty) * 0.4)) scale(1.15); }
-    100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.7); }
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+    25% { opacity: 1; transform: translate(calc(-50% + var(--tx) * 0.3), calc(-50% + var(--ty) * 0.3)) scale(1.1); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.75); }
   }
-  .comment-box { max-height: 0; overflow: hidden; margin-top: 0; border-top: 1px solid transparent; padding-top: 0; transition: max-height .32s ease, margin-top .32s ease, padding-top .32s ease; }
+  .comment-box { max-height: 0; overflow: hidden; margin-top: 0; border-top: 1px solid transparent; padding-top: 0; transition: max-height .4s cubic-bezier(.4,0,.2,1), margin-top .4s cubic-bezier(.4,0,.2,1), padding-top .4s cubic-bezier(.4,0,.2,1), border-color .4s ease; }
   .comment-box.open { max-height: 900px; margin-top: 12px; border-top: 1px solid #eef3f9; padding-top: 12px; }
-  .comment-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; font-size: 0.83rem; margin-bottom: 8px; line-height: 1.5; background: var(--sky-pale); padding: 8px 12px; border-radius: 10px; animation: commentIn .22s ease; transition: opacity .16s ease, transform .16s ease, max-height .16s ease; }
-  .comment-item.comment-item-removing { opacity: 0; transform: scale(0.96); }
-  @keyframes commentIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .comment-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; font-size: 0.83rem; margin-bottom: 8px; line-height: 1.5; background: var(--sky-pale); padding: 8px 12px; border-radius: 10px; animation: commentIn .3s cubic-bezier(.4,0,.2,1); transition: opacity .22s cubic-bezier(.4,0,.2,1), transform .22s cubic-bezier(.4,0,.2,1); }
+  .comment-item.comment-item-removing { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  @keyframes commentIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
   .comment-item-main { flex: 1; }
   .comment-item b { color: var(--blue-dark); }
   .comment-edited-tag { font-size: 0.7rem; color: var(--text-light); margin-left: 6px; font-style: italic; }
