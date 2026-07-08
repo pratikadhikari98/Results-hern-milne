@@ -34,11 +34,13 @@
       <p>KALIKA MANAVGYAN SECONDARY SCHOOL</p>
     </div>
   </div>
-  <nav>
-    <a href="#community">समुदाय</a>
-  </nav>
-  <div class="auth-box" id="authBox">
-    <button class="auth-btn" id="loginBtn" onclick="loginWithGoogle()">🔑 लगइन</button>
+  <div class="header-menu">
+    <button class="menu-dots-btn" id="menuDotsBtn" onclick="toggleHeaderMenu()" aria-label="मेनु" aria-haspopup="true" aria-expanded="false">⋮</button>
+    <div class="header-dropdown" id="headerDropdown">
+      <div class="auth-box" id="authBox">
+        <button class="auth-btn" id="loginBtn" onclick="loginWithGoogle()">🔑 लगइन</button>
+      </div>
+    </div>
   </div>
 </header>
 <div id="headerSpacer"></div>
@@ -852,12 +854,29 @@ let currentUser = null;
 let isTeacher = false;
 let lastPostsSnapshot = [];
 const openComments = new Set();
+const editingComments = new Set();
+const lastCommentsSnapshot = {};
 
 function escapeHtml(str) {
   const d = document.createElement('div');
   d.textContent = str == null ? '' : String(str);
   return d.innerHTML;
 }
+
+function toggleHeaderMenu() {
+  const dropdown = document.getElementById('headerDropdown');
+  const btn = document.getElementById('menuDotsBtn');
+  const open = dropdown.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.addEventListener('click', (e) => {
+  const menu = document.querySelector('.header-menu');
+  const dropdown = document.getElementById('headerDropdown');
+  if (menu && dropdown && !menu.contains(e.target)) {
+    dropdown.classList.remove('open');
+    document.getElementById('menuDotsBtn').setAttribute('aria-expanded', 'false');
+  }
+});
 
 function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -866,7 +885,11 @@ function loginWithGoogle() {
   });
 }
 
-function logout() { auth.signOut(); }
+function logout() {
+  auth.signOut();
+  const dropdown = document.getElementById('headerDropdown');
+  if (dropdown) dropdown.classList.remove('open');
+}
 
 function renderAuthBox() {
   const boxes = [document.getElementById('authBox'), document.getElementById('authBoxHero')].filter(Boolean);
@@ -981,9 +1004,9 @@ function renderPosts(posts) {
         <div class="post-body">${escapeHtml(p.body)}</div>
         ${renderMediaEmbed(p.mediaUrl)}
         <div class="post-actions">
-          <button class="post-action-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${p.id}')">${liked ? '❤️' : '🤍'} लाइक (${likeCount})</button>
-          <button class="post-action-btn" onclick="toggleComments('${p.id}')">💬 कमेन्ट</button>
-          <button class="post-action-btn" onclick="sharePost('${p.id}')">🔗 सेयर</button>
+          <button class="post-action-btn like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${p.id}', this)"><span class="like-icon">${liked ? '❤️' : '🤍'}</span> लाइक <span class="like-count">(${likeCount})</span></button>
+          <button class="post-action-btn ${commentsOpen ? 'comments-active' : ''}" onclick="toggleComments('${p.id}', this)"><span class="comment-icon">💬</span> कमेन्ट</button>
+          <button class="post-action-btn" onclick="sharePost('${p.id}', this)"><span class="share-icon">🔗</span> सेयर</button>
         </div>
         <div class="comment-box ${commentsOpen ? 'open' : ''}" id="commentBox-${p.id}">
           <div class="comment-list" id="commentList-${p.id}">कमेन्ट लोड हुँदैछ...</div>
@@ -999,13 +1022,18 @@ function renderPosts(posts) {
   posts.forEach(p => { if (openComments.has(p.id)) loadComments(p.id); });
 }
 
-async function toggleLike(postId) {
+async function toggleLike(postId, btn) {
   if (!currentUser) { alert('लाइक गर्न लगइन गर्नुहोस्।'); return; }
   const ref = db.collection('posts').doc(postId);
   const post = lastPostsSnapshot.find(p => p.id === postId);
   const likes = (post && post.likes) || {};
   const already = !!likes[currentUser.uid];
   const field = `likes.${currentUser.uid}`;
+  if (btn && !already) {
+    btn.classList.add('like-burst');
+    spawnLikeParticles(btn);
+    setTimeout(() => btn.classList.remove('like-burst'), 450);
+  }
   try {
     await ref.update({ [field]: already ? firebase.firestore.FieldValue.delete() : true });
   } catch (e) {
@@ -1013,15 +1041,42 @@ async function toggleLike(postId) {
   }
 }
 
-function toggleComments(postId) {
+function spawnLikeParticles(btn) {
+  const rect = btn.getBoundingClientRect();
+  const icon = btn.querySelector('.like-icon');
+  const originX = icon ? icon.getBoundingClientRect().left + icon.offsetWidth / 2 : rect.left + 18;
+  const originY = icon ? icon.getBoundingClientRect().top + icon.offsetHeight / 2 : rect.top + rect.height / 2;
+  const emojis = ['❤️', '💙', '💕'];
+  for (let i = 0; i < 5; i++) {
+    const p = document.createElement('span');
+    p.className = 'like-particle';
+    p.textContent = emojis[i % emojis.length];
+    p.style.left = originX + 'px';
+    p.style.top = originY + 'px';
+    const angle = (Math.random() * 80 - 40) * (Math.PI / 180);
+    const dist = 30 + Math.random() * 24;
+    p.style.setProperty('--tx', (Math.sin(angle) * dist).toFixed(1) + 'px');
+    p.style.setProperty('--ty', (-Math.cos(angle) * dist - 20).toFixed(1) + 'px');
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 700);
+  }
+}
+
+function toggleComments(postId, btn) {
   const box = document.getElementById(`commentBox-${postId}`);
   if (openComments.has(postId)) {
     openComments.delete(postId);
     box.classList.remove('open');
+    if (btn) btn.classList.remove('comments-active');
   } else {
     openComments.add(postId);
     box.classList.add('open');
+    if (btn) btn.classList.add('comments-active');
     loadComments(postId);
+    setTimeout(() => {
+      const input = document.getElementById(`commentInput-${postId}`);
+      if (input) input.focus();
+    }, 200);
   }
 }
 
@@ -1029,17 +1084,88 @@ function loadComments(postId) {
   db.collection('posts').doc(postId).collection('comments')
     .orderBy('createdAt', 'asc')
     .onSnapshot((snap) => {
-      const list = document.getElementById(`commentList-${postId}`);
-      if (!list) return;
-      if (snap.empty) {
-        list.innerHTML = '<p style="font-size:0.8rem;color:var(--text-light);">अहिलेसम्म कुनै कमेन्ट छैन।</p>';
-        return;
-      }
-      list.innerHTML = snap.docs.map(d => {
-        const c = d.data();
-        return `<div class="comment-item"><b>${escapeHtml(c.authorName || 'प्रयोगकर्ता')}:</b> ${escapeHtml(c.text)}</div>`;
-      }).join('');
+      lastCommentsSnapshot[postId] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderComments(postId);
     });
+}
+
+function renderComments(postId) {
+  const list = document.getElementById(`commentList-${postId}`);
+  if (!list) return;
+  const comments = lastCommentsSnapshot[postId] || [];
+  if (comments.length === 0) {
+    list.innerHTML = '<p style="font-size:0.8rem;color:var(--text-light);">अहिलेसम्म कुनै कमेन्ट छैन।</p>';
+    return;
+  }
+  list.innerHTML = comments.map(c => {
+    const canModify = !!currentUser && (isTeacher || c.authorUid === currentUser.uid || (c.authorEmail && c.authorEmail === currentUser.email));
+    const isEditing = editingComments.has(`${postId}::${c.id}`);
+    if (isEditing) {
+      return `
+        <div class="comment-item comment-item-editing" data-id="${c.id}">
+          <textarea class="comment-edit-input" id="editInput-${postId}-${c.id}" rows="2">${escapeHtml(c.text)}</textarea>
+          <div class="comment-item-actions">
+            <button class="comment-mini-btn comment-mini-save" onclick="saveEditComment('${postId}','${c.id}')" title="सेभ गर्नुहोस्">✔️</button>
+            <button class="comment-mini-btn" onclick="cancelEditComment('${postId}','${c.id}')" title="रद्द गर्नुहोस्">✕</button>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="comment-item" data-id="${c.id}">
+        <div class="comment-item-main"><b>${escapeHtml(c.authorName || 'प्रयोगकर्ता')}:</b> <span class="comment-text">${escapeHtml(c.text)}</span>${c.edited ? '<span class="comment-edited-tag">(सम्पादित)</span>' : ''}</div>
+        ${canModify ? `
+        <div class="comment-item-actions">
+          <button class="comment-mini-btn" onclick="startEditComment('${postId}','${c.id}')" title="सम्पादन गर्नुहोस्">✏️</button>
+          <button class="comment-mini-btn comment-mini-delete" onclick="deleteComment('${postId}','${c.id}')" title="मेटाउनुहोस्">🗑️</button>
+        </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function startEditComment(postId, commentId) {
+  editingComments.add(`${postId}::${commentId}`);
+  renderComments(postId);
+  const input = document.getElementById(`editInput-${postId}-${commentId}`);
+  if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+}
+
+function cancelEditComment(postId, commentId) {
+  editingComments.delete(`${postId}::${commentId}`);
+  renderComments(postId);
+}
+
+async function saveEditComment(postId, commentId) {
+  const input = document.getElementById(`editInput-${postId}-${commentId}`);
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) { alert('कमेन्ट खाली हुन सक्दैन।'); return; }
+  try {
+    await db.collection('posts').doc(postId).collection('comments').doc(commentId).update({
+      text,
+      edited: true,
+      editedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    editingComments.delete(`${postId}::${commentId}`);
+  } catch (e) {
+    alert('कमेन्ट सम्पादन गर्न सकिएन: ' + e.message);
+  }
+}
+
+async function deleteComment(postId, commentId) {
+  if (!confirm('यो कमेन्ट मेटाउने पक्का हो?')) return;
+  try {
+    const item = document.querySelector(`#commentList-${postId} .comment-item[data-id="${commentId}"]`);
+    if (item) item.classList.add('comment-item-removing');
+    setTimeout(async () => {
+      try {
+        await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+      } catch (e) {
+        alert('कमेन्ट मेटाउन सकिएन: ' + e.message);
+      }
+    }, 160);
+  } catch (e) {
+    alert('कमेन्ट मेटाउन सकिएन: ' + e.message);
+  }
 }
 
 async function submitComment(postId) {
@@ -1052,6 +1178,7 @@ async function submitComment(postId) {
       text,
       authorName: currentUser.displayName || currentUser.email,
       authorEmail: currentUser.email,
+      authorUid: currentUser.uid,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     input.value = '';
@@ -1060,15 +1187,25 @@ async function submitComment(postId) {
   }
 }
 
-function sharePost(postId) {
+function sharePost(postId, btn) {
   const post = lastPostsSnapshot.find(p => p.id === postId);
   const title = post ? post.title : 'पोस्ट';
   const url = window.location.href.split('#')[0] + '#community';
+  const flashShared = () => {
+    if (!btn) return;
+    const original = btn.innerHTML;
+    btn.classList.add('share-pulse');
+    btn.innerHTML = '<span class="share-icon">✅</span> सेयर भयो';
+    setTimeout(() => {
+      btn.classList.remove('share-pulse');
+      btn.innerHTML = original;
+    }, 1400);
+  };
   if (navigator.share) {
-    navigator.share({ title: title, url: url }).catch(() => {});
+    navigator.share({ title: title, url: url }).then(flashShared).catch(() => {});
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(() => {
-      alert('लिंक कपी भयो! अब जहाँ चाहनुहुन्छ पेस्ट गर्नुहोस्।');
+      flashShared();
     }).catch(() => { prompt('यो लिंक कपी गर्नुहोस्:', url); });
   } else {
     prompt('यो लिंक कपी गर्नुहोस्:', url);
