@@ -27,12 +27,12 @@
   .topbar a { color: #cfe4ff; text-decoration: none; }
 
   /* HEADER */
-  header { background: linear-gradient(135deg, var(--sky-pale) 0%, var(--white) 60%, #ddeeff 100%); padding: 11px 5%; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 2px solid var(--blue-mid); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(30,90,168,0.10); flex-wrap: wrap; }
+  header { background: linear-gradient(135deg, var(--sky-pale) 0%, var(--white) 60%, #ddeeff 100%); padding: 18px 5%; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 2px solid var(--blue-mid); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(30,90,168,0.10); flex-wrap: wrap; }
   .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .logo-area { display: flex; align-items: center; gap: 9px; }
-  .logo-circle { width: 56px; height: 56px; border-radius: 50%; border: 2.5px solid var(--blue-mid); background: var(--white); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
-  .school-name h1 { font-family: 'Noto Serif Devanagari', serif; font-size: 1.28rem; font-weight: 700; color: var(--blue-dark); line-height: 1.18; }
-  .school-name p { font-size: 0.72rem; color: var(--blue-mid); font-weight: 600; margin-top: 2px; }
+  .logo-circle { width: 70px; height: 70px; border-radius: 50%; border: 2.5px solid var(--blue-mid); background: var(--white); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+  .school-name h1 { font-family: 'Noto Serif Devanagari', serif; font-size: 1.55rem; font-weight: 700; color: var(--blue-dark); line-height: 1.18; }
+  .school-name p { font-size: 0.82rem; color: var(--blue-mid); font-weight: 600; margin-top: 2px; }
   nav { display: flex; gap: 2px; flex-wrap: wrap; }
   nav a { color: var(--blue-dark); text-decoration: none; font-size: 0.9rem; font-weight: 600; padding: 7px 12px; border-radius: 6px; transition: background .2s, color .2s; }
   nav a:hover, nav a.active { background: var(--blue-mid); color: var(--white); }
@@ -40,7 +40,7 @@
   .btn-admit:hover { background: #991b1b !important; }
 
   /* HERO */
-  .hero { background: linear-gradient(160deg, #c0dff5 0%, #e4f2fb 45%, #f0f8ff 100%); min-height: auto; display: flex; align-items: center; justify-content: center; padding: 60px 5%; gap: 40px; flex-wrap: wrap; }
+  .hero { background: linear-gradient(160deg, #c0dff5 0%, #e4f2fb 45%, #f0f8ff 100%); min-height: auto; display: flex; align-items: center; justify-content: center; padding: 60px 5% 20px; gap: 40px; flex-wrap: wrap; }
   .hero-text { flex: 1 1 320px; }
   .hero-eyebrow { display: inline-block; background: var(--blue-mid); color: var(--white); font-size: 0.75rem; font-weight: 700; letter-spacing: .08em; padding: 4px 14px; border-radius: 20px; margin-bottom: 16px; }
   .hero-text h2 { font-family: 'Noto Serif Devanagari', serif; font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 700; color: var(--blue-dark); line-height: 1.35; margin-bottom: 14px; }
@@ -272,7 +272,7 @@
   .footer-bottom { border-top: 1px solid rgba(255,255,255,.12); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 0.76rem; color: #7da4c4; }
 
   /* ══ BLACKBOARD NEWS SECTION ══ */
-  .news-section { background: var(--sky-pale); padding: 6px 5% 68px; }
+  .news-section { background: var(--sky-pale); padding: 0 5% 68px; }
   .news-inner   { max-width: 1100px; margin: 0 auto; }
 
   /* सूचना-पाटी title — नीलो banner भित्र, सेतो अक्षरमा, loop मा एनिमेटेड */
